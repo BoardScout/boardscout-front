@@ -1,6 +1,6 @@
 # BOARDSCOUT Frontend
 
-순수 HTML/CSS/JavaScript로 만든 보드게임 추천 서비스 프론트입니다. 별도 빌드 도구나 런타임 의존성이 없으며 Nginx 컨테이너가 `public/`을 그대로 제공합니다.
+순수 HTML/CSS/JavaScript로 만든 보드게임 추천 서비스 프론트입니다. 별도 빌드 도구나 런타임 의존성이 없으며 BusyBox HTTP 서버가 `public/`을 그대로 제공합니다. 외부 요청 라우팅과 API 프록시는 별도 인프라 저장소의 Nginx가 담당합니다.
 
 ## 화면
 
@@ -16,7 +16,6 @@
 ```text
 frontend/
 ├── Dockerfile
-├── nginx.conf
 ├── package.json
 └── public/
     ├── assets/              # 생성한 보드게임 비주얼
@@ -40,6 +39,8 @@ npm run serve
 ```
 
 브라우저에서 `http://localhost:4173`을 엽니다. Gateway 환경에서는 `/api/core/*`와 `/api/recommend/*`가 각각 Spring Boot와 FastAPI로 전달됩니다. 두 API가 아직 준비되지 않은 경우 로그인·취향·추천·저장은 브라우저 로컬 데모 모드로 동작합니다.
+
+컨테이너는 내부 포트 `4173`에서 정적 파일만 제공합니다. 운영 환경에서는 이 포트를 외부에 직접 공개하지 않고 edge Nginx가 프록시합니다.
 
 ## Typography
 
