@@ -1,0 +1,7 @@
+.DS_Store
+.env
+.omx/
+node_modules/
+dist/
+*.log
+
