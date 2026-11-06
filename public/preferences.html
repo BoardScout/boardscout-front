@@ -3,47 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="인원, 시간, 난이도, 장르로 보드게임 취향 설정" />
-    <title>취향 설정 — BOARDSCOUT</title>
+    <meta name="description" content="인원, 시간, 난이도, 테마, 플레이 방식으로 지금 할 보드게임 찾기" />
+    <title>지금 상황으로 추천 — BOARDSCOUT</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body class="app-page">
     <a class="skip-link" href="#main">본문으로 바로가기</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/preferences.html">RECOMMEND</a><a href="/recommendations.html">GAMES</a><a href="/mypage.html">MY PAGE</a></nav><div class="header-actions"><a class="text-button" href="/mypage.html">MY PAGE</a><button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button></div></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/preferences.html">RIGHT NOW</a><a href="/taste.html">MY TASTE</a><a href="/mypage.html">MY PAGE</a></nav><div class="header-actions"><a class="text-button" href="/taste.html">취향으로 찾기</a><button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button></div></header>
     <main id="main" class="page-shell">
-      <p class="page-kicker">TELL US ABOUT TONIGHT</p>
-      <h1 class="page-title">오늘 밤에 맞는 게임을<br /><em>네 가지 질문으로.</em></h1>
-      <p class="page-lead">정답은 없습니다. 지금 함께하는 사람과 가능한 시간에 가장 가까운 것을 고르세요.</p>
+      <p class="page-kicker">RIGHT NOW · CONTENT-BASED</p>
+      <h1 class="page-title">지금 펼칠 게임을<br /><em>다섯 가지 선택으로.</em></h1>
+      <p class="page-lead">BGG 데이터의 인원과 시간을 먼저 확인하고, 실제 복잡도·카테고리·메커니즘이 가까운 게임을 찾습니다.</p>
       <form id="preferenceForm" class="page-grid">
         <div class="panel">
-          <div class="field"><span>01 · 몇 명이 함께하나요?</span><div class="choice-grid">
-            <label class="choice"><input type="radio" name="players" value="2" required /><span>둘이서<small>차분한 맞대결</small></span></label>
-            <label class="choice"><input type="radio" name="players" value="3" /><span>세 명<small>균형 잡힌 테이블</small></span></label>
-            <label class="choice"><input type="radio" name="players" value="4" /><span>네 명<small>협력과 경쟁 사이</small></span></label>
-            <label class="choice"><input type="radio" name="players" value="6" /><span>다섯 명 이상<small>대화가 많은 파티</small></span></label>
+          <div class="field"><span>01 · 몇 명이 플레이하나요?</span><div class="choice-grid choice-grid--three">
+            <label class="choice"><input type="radio" name="playerCount" value="1" required /><span>혼자<small>솔로 플레이</small></span></label>
+            <label class="choice"><input type="radio" name="playerCount" value="2" /><span>2명<small>둘이 마주 앉아</small></span></label>
+            <label class="choice"><input type="radio" name="playerCount" value="3" /><span>3명<small>작은 테이블</small></span></label>
+            <label class="choice"><input type="radio" name="playerCount" value="4" /><span>4명<small>가장 넓은 선택지</small></span></label>
+            <label class="choice"><input type="radio" name="playerCount" value="6" /><span>5–6명<small>모임과 파티</small></span></label>
+            <label class="choice"><input type="radio" name="playerCount" value="8" /><span>7명 이상<small>큰 그룹</small></span></label>
           </div></div>
-          <div class="field"><span>02 · 가능한 시간은?</span><div class="choice-grid">
-            <label class="choice"><input type="radio" name="minutes" value="30" required /><span>30분 안쪽<small>가볍게 한 판</small></span></label>
-            <label class="choice"><input type="radio" name="minutes" value="60" /><span>한 시간<small>몰입하기 좋은 길이</small></span></label>
-            <label class="choice"><input type="radio" name="minutes" value="120" /><span>두 시간 이상<small>긴 호흡의 게임</small></span></label>
+          <div class="field"><span>02 · 최대 몇 분까지 괜찮나요?</span><div class="choice-grid">
+            <label class="choice"><input type="radio" name="maxPlayTime" value="30" required /><span>30분<small>빠르게 한 판</small></span></label>
+            <label class="choice"><input type="radio" name="maxPlayTime" value="60" /><span>60분<small>부담 없는 몰입</small></span></label>
+            <label class="choice"><input type="radio" name="maxPlayTime" value="90" /><span>90분<small>전략을 펼치기</small></span></label>
+            <label class="choice"><input type="radio" name="maxPlayTime" value="120" /><span>120분 이상<small>긴 호흡의 게임</small></span></label>
+          </div></div>
+          <div class="field"><span>03 · 어느 정도 복잡한 게임을 원하나요?</span><div class="choice-grid choice-grid--three">
+            <label class="choice"><input type="radio" name="difficulty" value="1" required /><span>가볍게<small>BGG 1.0–1.8</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="2" /><span>적당히<small>BGG 1.8–2.8</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="3" /><span>깊게<small>BGG 2.8 이상</small></span></label>
           </div></div>
         </div>
         <div class="panel">
-          <div class="field"><span>03 · 어느 정도 생각하고 싶나요?</span><div class="choice-grid">
-            <label class="choice"><input type="radio" name="difficulty" value="1" required /><span>가볍게<small>설명 5분 안쪽</small></span></label>
-            <label class="choice"><input type="radio" name="difficulty" value="2" /><span>적당히<small>선택의 재미</small></span></label>
-            <label class="choice"><input type="radio" name="difficulty" value="3" /><span>깊게<small>전략적인 밤</small></span></label>
+          <div class="field"><span>04 · 어떤 테마가 끌리나요? (복수 선택)</span><div class="choice-grid">
+            <label class="choice"><input type="checkbox" name="themes" value="strategy" /><span>전략·경영<small>한 수 앞과 자원 운영</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="party" /><span>파티·심리전<small>웃음과 눈치 싸움</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="adventure" /><span>판타지·모험<small>탐험과 성장</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="mystery" /><span>추리·공포<small>단서와 긴장감</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="scifi" /><span>SF·우주<small>미래와 우주 개발</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="family" /><span>가족·어린이<small>세대가 함께 편하게</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="history" /><span>역사·문명<small>시대와 문명 발전</small></span></label>
+            <label class="choice"><input type="checkbox" name="themes" value="building" /><span>건설·경제<small>도시와 엔진 만들기</small></span></label>
           </div></div>
-          <div class="field"><span>04 · 끌리는 장르는? (복수 선택)</span><div class="choice-grid">
-            <label class="choice"><input type="checkbox" name="genres" value="strategy" /><span>전략<small>한 수 앞을 읽기</small></span></label>
-            <label class="choice"><input type="checkbox" name="genres" value="mystery" /><span>추리<small>단서를 함께 연결하기</small></span></label>
-            <label class="choice"><input type="checkbox" name="genres" value="coop" /><span>협력<small>같은 편이 되는 밤</small></span></label>
-            <label class="choice"><input type="checkbox" name="genres" value="party" /><span>파티<small>웃음과 대화 중심</small></span></label>
+          <div class="field"><span>05 · 어떤 플레이 감각이 좋은가요? (선택)</span><div class="choice-grid">
+            <label class="choice"><input type="checkbox" name="playStyles" value="coop" /><span>함께 협력하기<small>같은 목표를 해결</small></span></label>
+            <label class="choice"><input type="checkbox" name="playStyles" value="social" /><span>대화·추리하기<small>설명, 협상, 심리전</small></span></label>
+            <label class="choice"><input type="checkbox" name="playStyles" value="engine" /><span>전략을 쌓아가기<small>자원과 조합의 성장</small></span></label>
+            <label class="choice"><input type="checkbox" name="playStyles" value="luck" /><span>주사위와 운<small>예측 못 한 반전</small></span></label>
+            <label class="choice"><input type="checkbox" name="playStyles" value="puzzle" /><span>퍼즐·타일 배치<small>공간을 채우는 재미</small></span></label>
+            <label class="choice"><input type="checkbox" name="playStyles" value="solo" /><span>혼자 플레이하기<small>내 속도로 생각하기</small></span></label>
           </div></div>
-          <input type="hidden" name="mood" value="night" />
-          <div class="form-actions"><button class="primary-button" type="submit">추천 결과 보기</button><a class="text-link" href="/">나중에 하기</a></div>
+          <div class="form-actions"><button class="primary-button" type="submit">지금 할 게임 보기</button><a class="text-link" href="/taste.html">취향으로 추천받기</a></div>
           <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
-          <div class="stepper" aria-label="추천 과정 2단계 중 1단계"><span class="is-active"></span><span></span></div>
+          <div class="stepper" aria-label="상황 추천 2단계 중 1단계"><span class="is-active"></span><span></span></div>
         </div>
       </form>
     </main>

@@ -11,14 +11,14 @@
   <body>
     <a class="skip-link" href="#main">본문으로 바로가기</a>
     <div class="announcement">
-      <span>HALLOWEEN WEEK · 오늘의 미스터리 게임 7선</span>
-      <span class="announcement__detail">10.24 — 11.02</span>
+      <span>TONIGHT'S TABLE · 오늘의 추천 게임</span>
+      <span class="announcement__detail">CURATED DAILY</span>
     </div>
 
     <header class="site-header" id="siteHeader">
       <a class="brand" href="#top" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a>
       <nav class="main-nav" aria-label="주요 메뉴">
-        <a href="/preferences.html">RECOMMEND</a>
+        <a href="#recommendWays">RECOMMEND</a>
         <a href="#collection">TONIGHT</a>
         <a href="#journal">GUIDE</a>
         <a href="#objects">THEMES</a>
@@ -40,19 +40,32 @@
         <div class="hero__copy">
           <p class="eyebrow">TONIGHT'S GAME 04</p>
           <h1 id="heroTitle">Play<br /><em>After Dark.</em></h1>
-          <p class="hero__description">몇 명인지, 얼마나 놀지, 어떤 밤을 원하는지.<br />당신의 테이블에 꼭 맞는 게임을 골라드립니다.</p>
-          <a class="arrow-link" href="/preferences.html">내 게임 추천 받기 <span aria-hidden="true">↗</span></a>
+          <p class="hero__description">지금 상황으로 빠르게, 좋아한 게임으로 더 깊게.<br />BGG 데이터에서 당신의 다음 게임을 골라드립니다.</p>
+          <a class="arrow-link" href="#recommendWays">내 게임 추천 받기 <span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero__index" aria-hidden="true">01 / 04</div>
         <div class="hero__scroll" aria-hidden="true"><span></span>SCROLL TO DISCOVER</div>
       </section>
 
-      <section class="intro" id="collection">
-        <div class="section-label">TONIGHT'S PICK</div>
-        <div class="intro__content reveal">
-          <p class="intro__number">04</p>
-          <h2>오늘 밤의 분위기를<br />먼저 골라보세요.</h2>
-          <p>가볍게 웃고 싶은 밤, 조용히 머리를 쓰고 싶은 밤, 함께 비밀을 풀고 싶은 밤. 인원과 시간보다 먼저 기분에서 시작합니다.</p>
+      <section class="recommend-chooser" id="recommendWays" aria-labelledby="recommendWaysTitle">
+        <div class="section-label">TWO WAYS TO FIND YOUR GAME</div>
+        <div class="recommend-chooser__heading reveal">
+          <p class="intro__number">02</p>
+          <div><p class="eyebrow">START HERE</p><h2 id="recommendWaysTitle">어떤 추천이<br />필요하세요?</h2></div>
+        </div>
+        <div class="recommend-paths reveal">
+          <a class="recommend-path" href="/preferences.html">
+            <span>01 · RIGHT NOW</span>
+            <h3>지금 상황에 맞는 게임</h3>
+            <p>인원, 시간, 난이도, 테마를 고르면 지금 바로 플레이할 수 있는 게임만 추립니다.</p>
+            <b>5가지 선택으로 시작하기 ↗</b>
+          </a>
+          <a class="recommend-path recommend-path--dark" href="/taste.html">
+            <span>02 · MY TASTE</span>
+            <h3>내 취향에 맞는 게임</h3>
+            <p>재미있게 했던 게임을 3개 이상 고르면 비슷한 테마와 플레이 감각을 찾아드립니다.</p>
+            <b>좋아한 게임 고르기 ↗</b>
+          </a>
         </div>
       </section>
 
@@ -62,35 +75,41 @@
             <p class="eyebrow">CURATED GAMES</p>
             <h2 id="newTitle">오늘의 추천</h2>
           </div>
-          <div class="filters" role="group" aria-label="상품 필터">
-            <button class="filter is-active" type="button" data-filter="all">ALL</button>
-            <button class="filter" type="button" data-filter="two">2인</button>
-            <button class="filter" type="button" data-filter="group">3–4인</button>
-            <button class="filter" type="button" data-filter="party">PARTY</button>
+          <div class="product-rail__controls">
+            <div class="filters" role="group" aria-label="테마별 추천 필터">
+              <button class="filter is-active" type="button" data-filter="all">전체</button>
+              <button class="filter" type="button" data-filter="strategy">전략</button>
+              <button class="filter" type="button" data-filter="party">파티</button>
+              <button class="filter" type="button" data-filter="coop">협력</button>
+              <button class="filter" type="button" data-filter="family">가족</button>
+            </div>
+            <button class="rail-toggle" id="railToggle" type="button" aria-pressed="false">자동 넘김 멈추기</button>
           </div>
         </div>
 
-        <div class="product-grid">
-          <article class="product-card reveal" data-category="two">
-            <a class="product-card__image crop crop--coat" href="#game-monolith" aria-label="모놀리스 전략 게임 추천 상세"><span class="badge">EDITOR'S PICK</span></a>
-            <div class="product-card__info"><div><p>ABSTRACT · STRATEGY</p><h3>Monolith</h3></div><p>2인 · 30분</p></div>
-            <button class="quick-add" type="button" data-product="Monolith">저장하기 <span>＋</span></button>
+        <div class="product-grid" id="recommendationRail" aria-label="천천히 순환하는 추천 게임">
+          <div class="product-track">
+          <article class="product-card reveal" data-category="strategy coop" data-game-id="0">
+            <a class="product-card__image crop crop--coat" href="/taste.html" aria-label="팬데믹과 비슷한 게임 추천 받기"><span class="badge">CO-OP CLASSIC</span></a>
+            <div class="product-card__info"><div><p>COOPERATIVE · STRATEGY</p><h3>팬데믹 <small>Pandemic</small></h3></div><p>2–4인 · 45분</p></div>
+            <button class="quick-add" type="button" data-game-id="0">저장하기 <span>＋</span></button>
           </article>
-          <article class="product-card reveal" data-category="group">
-            <a class="product-card__image crop crop--bag" href="#game-archive" aria-label="아카이브 협력 추리 게임 추천 상세"><span class="badge badge--dark">HALLOWEEN</span></a>
-            <div class="product-card__info"><div><p>CO-OP · MYSTERY</p><h3>The Archive</h3></div><p>3–4인 · 60분</p></div>
-            <button class="quick-add" type="button" data-product="The Archive">저장하기 <span>＋</span></button>
+          <article class="product-card reveal" data-category="strategy" data-game-id="8">
+            <a class="product-card__image crop crop--bag" href="/taste.html" aria-label="7 원더스 대결과 비슷한 게임 추천 받기"><span class="badge badge--dark">BEST FOR TWO</span></a>
+            <div class="product-card__info"><div><p>CIVILIZATION · STRATEGY</p><h3>7 원더스 대결 <small>7 Wonders Duel</small></h3></div><p>2인 · 30분</p></div>
+            <button class="quick-add" type="button" data-game-id="8">저장하기 <span>＋</span></button>
           </article>
-          <article class="product-card reveal" data-category="party">
-            <a class="product-card__image crop crop--knit" href="#game-side-eye" aria-label="사이드 아이 파티 게임 추천 상세"></a>
-            <div class="product-card__info"><div><p>BLUFFING · PARTY</p><h3>Side Eye</h3></div><p>4–8인 · 20분</p></div>
-            <button class="quick-add" type="button" data-product="Side Eye">저장하기 <span>＋</span></button>
+          <article class="product-card reveal" data-category="party coop" data-game-id="6">
+            <a class="product-card__image crop crop--knit" href="/taste.html" aria-label="코드네임과 비슷한 게임 추천 받기"></a>
+            <div class="product-card__info"><div><p>TEAM · WORD · PARTY</p><h3>코드네임 <small>Codenames</small></h3></div><p>2–8인 · 15분</p></div>
+            <button class="quick-add" type="button" data-game-id="6">저장하기 <span>＋</span></button>
           </article>
-          <article class="product-card reveal" data-category="two">
-            <a class="product-card__image crop crop--shoes" href="#game-red-thread" aria-label="레드 스레드 2인 게임 추천 상세"><span class="badge">BEST FOR TWO</span></a>
-            <div class="product-card__info"><div><p>TILE · TACTICAL</p><h3>Red Thread</h3></div><p>2인 · 25분</p></div>
-            <button class="quick-add" type="button" data-product="Red Thread">저장하기 <span>＋</span></button>
+          <article class="product-card reveal" data-category="strategy family" data-game-id="15">
+            <a class="product-card__image crop crop--shoes" href="/taste.html" aria-label="아줄과 비슷한 게임 추천 받기"><span class="badge">FAMILY PICK</span></a>
+            <div class="product-card__info"><div><p>ABSTRACT · PUZZLE</p><h3>아줄 <small>Azul</small></h3></div><p>2–4인 · 45분</p></div>
+            <button class="quick-add" type="button" data-game-id="15">저장하기 <span>＋</span></button>
           </article>
+          </div>
         </div>
       </section>
 
@@ -116,7 +135,7 @@
 
     <footer class="footer">
       <div><a class="brand brand--footer" href="#top">BOARD<span>SCOUT</span></a><p>Better games for better nights.</p></div>
-      <div class="footer__links"><a href="/register.html">JOIN</a><a href="/preferences.html">HOW TO PICK</a><a href="/recommendations.html">RECOMMEND</a><a href="/mypage.html">MY PAGE</a></div>
+      <div class="footer__links"><a href="/register.html">JOIN</a><a href="/preferences.html">RIGHT NOW</a><a href="/taste.html">MY TASTE</a><a href="/mypage.html">MY PAGE</a></div>
       <p class="footer__copy">© 2026 BOARDSCOUT</p>
     </footer>
 

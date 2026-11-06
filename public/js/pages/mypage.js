@@ -1,6 +1,6 @@
 import { getCurrentUser, logoutAccount } from "../auth.js";
 import { recommendationApi } from "../api.js";
-import { getLocalFavorites, getPreferences, toggleFavorite } from "../recommendations.js";
+import { getDifficultyLabel, getLocalFavorites, getPlayerLabel, getPreferences, toggleFavorite } from "../recommendations.js";
 import { initChrome, showToast } from "../ui.js";
 
 initChrome();
@@ -9,7 +9,9 @@ const preferences = await getPreferences();
 document.querySelector("#accountName").textContent = user?.name || user?.username || "게스트 플레이어";
 document.querySelector("#accountId").textContent = user?.username || "로그인 전";
 document.querySelector("#preferenceSummary").textContent = preferences
-  ? `${preferences.players ?? "-"}인 · ${preferences.minutes ?? "-"}분 · 난이도 ${preferences.difficulty ?? "-"}`
+  ? preferences.recommendationMode === "taste"
+    ? `좋아한 게임 ${preferences.likedGameIds.length}개 기반`
+    : `${preferences.playerCount ?? "-"}인 · ${preferences.maxPlayTime ?? "-"}분 · 난이도 ${preferences.difficulty ?? "-"}`
   : "아직 저장된 취향이 없습니다.";
 
 const savedList = document.querySelector("#savedList");
@@ -17,7 +19,7 @@ const renderSaved = () => {
   const favorites = getLocalFavorites();
   savedList.innerHTML = favorites.length ? favorites.map((game) => `
     <article class="saved-item">
-      <div><h3>${game.title}</h3><p>${game.category} · ${game.players} · ${game.minutes}분</p></div>
+      <div><h3>${game.localizedTitle ?? game.title}</h3><p>${game.category} · ${getPlayerLabel(game)} · ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.3)}</p></div>
       <button class="text-link remove-favorite" type="button" data-id="${game.id}">삭제</button>
     </article>
   `).join("") : '<div class="empty-state">저장한 게임이 없습니다.<br><a class="text-link" href="/recommendations.html">추천 게임 보러가기</a></div>';
