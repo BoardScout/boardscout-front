@@ -6,6 +6,7 @@ const form = document.querySelector("#preferenceForm");
 const message = document.querySelector("#formMessage");
 
 const current = await getPreferences();
+// 이전에 저장한 상황 추천 조건이 있으면 폼을 복원해 다시 선택하는 수고를 줄입니다.
 if (current?.recommendationMode === "context") {
   for (const [key, value] of Object.entries(current)) {
     const values = Array.isArray(value) ? value : [String(value)];
@@ -19,6 +20,7 @@ if (current?.recommendationMode === "context") {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = new FormData(form);
+  // FormData의 문자열 값을 추천 계약에 맞는 숫자와 배열로 변환합니다.
   const payload = {
     recommendationMode: "context",
     playerCount: Number(data.get("playerCount")),

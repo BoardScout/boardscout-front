@@ -54,6 +54,7 @@ export const getDifficultyLabel = (complexity) => {
 };
 
 export function normalizePreferences(preferences = {}) {
+  // 이전 DTO 필드도 현재 추천 계약으로 변환해 저장된 사용자 데이터와의 호환성을 유지합니다.
   const legacyGenres = Array.isArray(preferences.genres) ? preferences.genres : [];
   return {
     recommendationMode: preferences.recommendationMode ?? "context",
@@ -72,12 +73,14 @@ const overlapCount = (left, right) => left.filter((value) => right.includes(valu
 
 export function scoreContextGames(preferences = {}) {
   const preference = normalizePreferences(preferences);
+  // 인원과 시간은 플레이 가능 여부를 결정하므로 점수가 아닌 필수 조건으로 먼저 거릅니다.
   return GAMES.filter((game) => {
     const playerMatch = !preference.playerCount
       || (game.minPlayers <= preference.playerCount && preference.playerCount <= game.maxPlayers);
     const timeMatch = !preference.maxPlayTime || game.maxPlayTime <= preference.maxPlayTime;
     return playerMatch && timeMatch;
   }).map((game) => {
+    // 난이도·테마·플레이 방식·평점은 후보 안에서의 정렬 신호로만 사용합니다.
     const targetComplexity = difficultyCenter[preference.difficulty] ?? 2.3;
     const complexityScore = Math.max(0, 20 - Math.abs(game.complexity - targetComplexity) * 12);
     const themeScore = Math.min(overlapCount(preference.themes, game.themes) * 12, 24);
@@ -92,6 +95,7 @@ export function scoreTasteGames(preferences = {}) {
   const liked = GAMES.filter((game) => preference.likedGameIds.includes(game.id));
   if (!liked.length) return [...GAMES].sort((a, b) => b.averageRating - a.averageRating);
 
+  // 좋아한 게임들의 공통 테마와 플레이 방식, 평균 복잡도로 간단한 취향 프로필을 만듭니다.
   const themeProfile = liked.flatMap((game) => game.themes);
   const styleProfile = liked.flatMap((game) => game.playStyles);
   const averageComplexity = liked.reduce((sum, game) => sum + game.complexity, 0) / liked.length;
@@ -114,14 +118,17 @@ export function scoreGames(preferences = {}) {
 export async function getRecommendations() {
   try {
     const payload = await recommendationApi.games();
+    // API 응답 래퍼 유무와 관계없이 추천 목록만 페이지에 전달합니다.
     return payload.result?.items ?? payload.items ?? payload;
   } catch {
+    // 추천 서버가 없으면 같은 입력으로 브라우저 내 점수 계산을 수행합니다.
     return scoreGames(localSession.getPreferences() ?? {});
   }
 }
 
 export async function savePreferences(payload) {
   const normalized = normalizePreferences(payload);
+  // 이동 직후에도 값을 읽을 수 있도록 로컬에 먼저 저장한 뒤 서버와 동기화합니다.
   localSession.setPreferences(normalized);
   try { return await coreApi.savePreferences(normalized); } catch { return normalized; }
 }
@@ -140,6 +147,7 @@ export async function toggleFavorite(game) {
   const current = localSession.getFavorites();
   const exists = current.some((item) => item.id === game.id);
   const next = exists ? current.filter((item) => item.id !== game.id) : [...current, game];
+  // 저장 버튼은 즉시 반응하고, 서버 동기화 실패 시에도 로컬 목록은 유지합니다.
   localSession.setFavorites(next);
   try {
     if (exists) await coreApi.removeFavorite(game.id);

@@ -8,6 +8,7 @@ const message = document.querySelector("#formMessage");
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const submit = form.querySelector("button[type='submit']");
+  // 요청 중 중복 제출을 막고 현재 진행 상태를 사용자에게 알립니다.
   submit.disabled = true;
   message.textContent = "로그인 정보를 확인하고 있습니다…";
   try {

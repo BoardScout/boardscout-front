@@ -5,6 +5,7 @@ initChrome();
 const list = document.querySelector("#recommendationList");
 const preferences = await getPreferences();
 const isTaste = preferences?.recommendationMode === "taste";
+// 같은 결과 화면을 추천 방식에 맞는 제목·설명·재선택 경로로 구성합니다.
 document.querySelector("#resultKicker").textContent = isTaste ? "YOUR TASTE, MATCHED" : "YOUR PICKS, CURATED";
 document.querySelector("#resultTitle").innerHTML = isTaste
   ? "좋아한 게임 다음에는<br /><em>이런 게임.</em>"
@@ -15,6 +16,7 @@ document.querySelector("#resultLead").textContent = isTaste
 document.querySelector("#retryLink").href = isTaste ? "/taste.html" : "/preferences.html";
 
 const games = await getRecommendations();
+// 추천 결과는 현재 순서를 data-index로 연결해 저장 버튼에서 같은 게임을 찾습니다.
 list.innerHTML = games.length ? games.map((game, index) => `
   <article class="recommendation-row">
     <div class="recommendation-art" aria-hidden="true"></div>

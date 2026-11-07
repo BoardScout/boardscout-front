@@ -2,6 +2,7 @@ export function initChrome() {
   const menuButton = document.querySelector("#menuButton");
   const nav = document.querySelector(".main-nav");
   if (!menuButton || !nav) return;
+  // 모바일 메뉴가 열릴 때 배경 스크롤을 잠그고 접근성 상태를 함께 갱신합니다.
   menuButton.addEventListener("click", () => {
     const isOpen = nav.classList.toggle("is-open");
     menuButton.setAttribute("aria-expanded", String(isOpen));
@@ -16,6 +17,7 @@ export function initChrome() {
 }
 
 export function showToast(message) {
+  // 토스트가 없는 하위 페이지에서도 같은 피드백 함수를 사용할 수 있도록 필요할 때 생성합니다.
   let toast = document.querySelector("#toast");
   if (!toast) {
     toast = document.createElement("div");
@@ -32,12 +34,14 @@ export function showToast(message) {
 }
 
 export function initReveal() {
+  // IntersectionObserver 미지원 환경에서는 콘텐츠를 숨기지 않고 즉시 표시합니다.
   if (!("IntersectionObserver" in window)) {
     document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
     return;
   }
   const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
     if (entry.isIntersecting) {
+      // 한 번 나타난 요소는 다시 관찰하지 않아 불필요한 콜백을 줄입니다.
       entry.target.classList.add("is-visible");
       observer.unobserve(entry.target);
     }

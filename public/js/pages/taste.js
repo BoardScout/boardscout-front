@@ -9,6 +9,7 @@ const count = document.querySelector("#selectedCount");
 const submit = document.querySelector("#tasteSubmit");
 const message = document.querySelector("#formMessage");
 const current = await getPreferences();
+// 검색으로 목록이 다시 렌더링돼도 선택이 유지되도록 DOM 밖의 Set에 상태를 보관합니다.
 const selected = new Set(current?.recommendationMode === "taste" ? current.likedGameIds : []);
 
 const render = (query = "") => {
@@ -25,11 +26,13 @@ const render = (query = "") => {
 };
 
 const updateState = () => {
+  // 취향 프로필에 필요한 최소 선택 수를 만족할 때만 제출을 허용합니다.
   count.textContent = String(selected.size);
   submit.disabled = selected.size < 3;
 };
 
 picker.addEventListener("change", (event) => {
+  // 이벤트 위임으로 동적으로 생성된 체크박스의 선택 상태를 한곳에서 관리합니다.
   const gameId = Number(event.target.value);
   if (event.target.checked) selected.add(gameId);
   else selected.delete(gameId);
