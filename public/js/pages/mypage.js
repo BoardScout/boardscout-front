@@ -1,5 +1,4 @@
 import { getCurrentUser, logoutAccount } from "../auth.js";
-import { recommendationApi } from "../api.js";
 import { getDifficultyLabel, getLocalFavorites, getPlayerLabel, getPreferences, toggleFavorite } from "../recommendations.js";
 import { initChrome, showToast } from "../ui.js";
 
@@ -34,14 +33,6 @@ savedList.addEventListener("click", async (event) => {
   renderSaved();
   showToast("저장 목록에서 삭제했습니다");
 });
-
-try {
-  const remote = await recommendationApi.me();
-  document.querySelector("#fastapiSession").textContent = remote.username || "연결됨";
-} catch {
-  document.querySelector("#fastapiSession").textContent = user ? "데모 세션" : "미연결";
-}
-document.querySelector("#springSession").textContent = user ? "인식됨" : "미연결";
 
 document.querySelector("#logoutButton").addEventListener("click", async () => {
   await logoutAccount();

@@ -5,7 +5,7 @@ initChrome();
 const list = document.querySelector("#recommendationList");
 const preferences = await getPreferences();
 const isTaste = preferences?.recommendationMode === "taste";
-document.querySelector("#resultKicker").textContent = isTaste ? "YOUR TASTE, MATCHED" : "YOUR NIGHT, CURATED";
+document.querySelector("#resultKicker").textContent = isTaste ? "YOUR TASTE, MATCHED" : "YOUR PICKS, CURATED";
 document.querySelector("#resultTitle").innerHTML = isTaste
   ? "좋아한 게임 다음에는<br /><em>이런 게임.</em>"
   : "오늘의 테이블에 맞는<br /><em>추천 게임.</em>";

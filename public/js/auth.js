@@ -1,7 +1,7 @@
 import { ApiError, coreApi } from "./api.js";
 import { localSession } from "./storage.js";
 
-const demoUser = (username, name = "밤의 플레이어") => ({ id: "demo", username, name, demo: true });
+const demoUser = (username, name = "보드게임 플레이어") => ({ id: "demo", username, name, demo: true });
 const canUseDemoFallback = (error) => error instanceof TypeError || [404, 502, 503].includes(error.status);
 
 export async function registerAccount(payload) {
