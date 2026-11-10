@@ -45,5 +45,5 @@ export const coreApi = {
 export const recommendationApi = {
   health: () => request("/api/recommend/health"),
   me: () => request("/api/recommend/me"),
-  games: () => request("/api/recommend/games"),
+  games: (body) => request("/api/recommend/games", { method: "POST", body: JSON.stringify(body) }),
 };

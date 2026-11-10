@@ -116,13 +116,14 @@ export function scoreGames(preferences = {}) {
 }
 
 export async function getRecommendations() {
+  const preferences = normalizePreferences(localSession.getPreferences() ?? {});
   try {
-    const payload = await recommendationApi.games();
+    const payload = await recommendationApi.games(preferences);
     // API 응답 래퍼 유무와 관계없이 추천 목록만 페이지에 전달합니다.
     return payload.result?.items ?? payload.items ?? payload;
   } catch {
     // 추천 서버가 없으면 같은 입력으로 브라우저 내 점수 계산을 수행합니다.
-    return scoreGames(localSession.getPreferences() ?? {});
+    return scoreGames(preferences);
   }
 }
 
