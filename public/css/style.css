@@ -94,7 +94,9 @@ button { color: inherit; }
 .product-track .product-card { flex: 0 0 calc((100% - 42px) / 4); }
 .product-card { min-width: 0; transition: opacity .3s, transform .3s; }
 .product-card.is-hidden { display: none; }
-.product-card__image { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background-color: #242421; background-image: url("../assets/game-sheet.png"); background-repeat: no-repeat; background-size: 200% 200%; }
+.product-card__image { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: #242421; }
+.product-card__image img { width: 100%; height: 100%; object-fit: contain; transition: transform .5s ease; }
+.product-card:hover .product-card__image img { transform: scale(1.025); }
 
 /* Shared application pages */
 .app-page { min-height: 100vh; color: var(--ink); background: var(--paper); }
@@ -209,6 +211,25 @@ button { color: inherit; }
 .product-card__info h3 small { display: block; margin-top: 4px; color: #77746d; font-family: var(--display); font-size: 11px; font-weight: 400; }
 .quick-add { display: flex; justify-content: space-between; width: 100%; padding: 13px 2px; border: 0; color: #817e77; background: none; cursor: pointer; font-size: 9px; letter-spacing: .1em; transition: color .2s; }
 .quick-add:hover { color: var(--paper); }
+.product-card__summary { min-height: 62px; margin: 14px 2px 0; color: #a8a49c; font-size: 11px; line-height: 1.65; }
+
+.game-detail { min-height: 100vh; padding: 170px 8.5vw 100px; color: var(--ink); background: var(--paper); }
+.game-detail__back { display: inline-block; margin-bottom: 38px; font-size: 11px; text-decoration: underline; text-underline-offset: 5px; }
+.game-detail__layout { display: grid; grid-template-columns: minmax(260px, 440px) minmax(0, 1fr); gap: clamp(48px, 8vw, 120px); align-items: start; }
+.game-detail__cover { width: 100%; max-height: 650px; object-fit: contain; background: #d8d2c6; box-shadow: 0 24px 60px rgba(17,17,15,.14); }
+.game-detail__eyebrow { margin: 0 0 18px; color: #77736c; font-size: 10px; letter-spacing: .16em; }
+.game-detail h1 { margin: 0; font-size: clamp(52px, 7vw, 98px); font-weight: 450; line-height: .95; letter-spacing: -.07em; }
+.game-detail__original { margin: 14px 0 38px; color: var(--orange); font-family: var(--display); font-size: 28px; font-style: italic; }
+.game-detail__facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 0 42px; border-top: 1px solid rgba(17,17,15,.22); border-bottom: 1px solid rgba(17,17,15,.22); }
+.game-detail__facts div { padding: 16px 12px 16px 0; }
+.game-detail__facts dt { margin-bottom: 7px; color: #77736c; font-size: 9px; letter-spacing: .08em; }
+.game-detail__facts dd { margin: 0; font-size: 13px; }
+.game-detail__lead { margin: 0 0 38px; font-size: clamp(17px, 2vw, 22px); line-height: 1.75; }
+.game-detail__section { padding: 28px 0; border-top: 1px solid rgba(17,17,15,.2); }
+.game-detail__section h2 { margin: 0 0 12px; font-size: 13px; }
+.game-detail__section p { margin: 0; color: #625f59; line-height: 1.8; }
+.game-detail__source { display: inline-block; margin-top: 34px; color: #625f59; font-size: 10px; text-decoration: underline; text-underline-offset: 4px; }
+.game-detail__error { min-height: 50vh; display: grid; place-items: center; text-align: center; }
 
 .objects { display: grid; grid-template-columns: .8fr 1.2fr; min-height: 720px; overflow: hidden; background: #20130d; }
 .objects__visual { position: relative; min-height: 720px; overflow: hidden; background: radial-gradient(circle at 47% 43%, #6d3d28 0, #3c241a 19%, #211712 42%, #0d0e0d 75%); }
@@ -270,6 +291,8 @@ button { color: inherit; }
   .objects { grid-template-columns: 1fr; }
   .objects__visual { min-height: 520px; }
   .objects__content { min-height: 600px; }
+  .game-detail__layout { grid-template-columns: 1fr; }
+  .game-detail__cover { width: min(100%, 440px); margin: 0 auto; }
 }
 
 @media (max-width: 600px) {
@@ -328,4 +351,6 @@ button { color: inherit; }
   .search-panel__suggestions { flex-wrap: wrap; }
   .search-panel__suggestions p { flex-basis: 100%; margin: 0; }
   .toast { right: 16px; bottom: 16px; left: 16px; max-width: none; text-align: center; }
+  .game-detail { padding: 120px 24px 70px; }
+  .game-detail__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

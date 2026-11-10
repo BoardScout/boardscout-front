@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10100f" />
+    <meta name="description" content="보드게임 인원, 시간, 특징과 게임 방법을 한국어로 소개합니다." />
+    <title>게임 소개 — BOARDSCOUT</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 바로가기</a>
+    <header class="site-header is-fixed" id="siteHeader">
+      <a class="brand" href="/index.html" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a>
+      <nav class="main-nav" aria-label="주요 메뉴">
+        <a href="/index.html#recommendWays">게임 추천</a>
+        <a href="/index.html#new">오늘의 게임</a>
+        <a href="/index.html#objects">분위기별 찾기</a>
+      </nav>
+      <div class="header-actions">
+        <a class="text-button" href="/login.html">로그인</a>
+        <a class="text-button bag-button" href="/mypage.html">저장한 게임 <span id="bagCount">0</span></a>
+        <button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button>
+      </div>
+    </header>
+    <main class="game-detail" id="main"><div id="gameDetail" aria-live="polite"></div></main>
+    <footer class="footer">
+      <div><a class="brand brand--footer" href="/index.html">BOARD<span>SCOUT</span></a><p>모든 테이블에 더 잘 맞는 게임을.</p></div>
+      <p class="footer__copy">© 2026 BOARDSCOUT</p>
+    </footer>
+    <script type="module" src="/js/pages/game-detail.js"></script>
+  </body>
+</html>
