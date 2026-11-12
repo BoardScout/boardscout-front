@@ -1,33 +1,33 @@
 import { ApiError, coreApi } from "./api.js";
 import { localSession } from "./storage.js";
 
-const demoUser = (username, name = "보드게임 플레이어") => ({ id: "demo", username, name, demo: true });
+const demoUser = (identity, name = "보드게임 플레이어") => ({
+  id: "demo",
+  email: identity,
+  username: identity,
+  nickname: name,
+  name,
+  demo: true,
+});
 // 네트워크 또는 게이트웨이 장애일 때만 데모 모드로 전환하며, 사용자 입력 오류는 그대로 전달합니다.
 const canUseDemoFallback = (error) => error instanceof TypeError || [404, 502, 503].includes(error.status);
 
 export async function registerAccount(payload) {
-  try {
-    const user = await coreApi.register(payload);
-    localSession.setUser(user);
-    return user;
-  } catch (error) {
-    if (!canUseDemoFallback(error)) throw error;
-    const user = demoUser(payload.username, payload.name);
-    localSession.setUser(user);
-    return user;
-  }
+  const response = await coreApi.register(payload);
+  return response.result ?? response;
 }
 
 export async function loginAccount(payload) {
   try {
-    const user = await coreApi.login(payload);
+    const response = await coreApi.login(payload);
+    const user = response.result ?? response;
     localSession.setUser(user);
     return user;
   } catch (error) {
     // 잘못된 계정 정보는 데모 로그인으로 우회하지 않고 폼에 오류를 표시합니다.
     if (error instanceof ApiError && [400, 401, 403].includes(error.status)) throw error;
     if (!canUseDemoFallback(error)) throw error;
-    const user = demoUser(payload.username);
+    const user = demoUser(payload.email ?? payload.username);
     localSession.setUser(user);
     return user;
   }

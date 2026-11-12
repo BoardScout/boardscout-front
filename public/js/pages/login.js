@@ -5,6 +5,10 @@ initChrome();
 const form = document.querySelector("#loginForm");
 const message = document.querySelector("#formMessage");
 
+if (new URLSearchParams(window.location.search).get("registered") === "true") {
+  message.textContent = "회원가입이 완료되었습니다. 새 계정으로 로그인해 주세요.";
+}
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const submit = form.querySelector("button[type='submit']");

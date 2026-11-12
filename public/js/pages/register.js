@@ -18,10 +18,18 @@ form.addEventListener("submit", async (event) => {
   submit.disabled = true;
   message.textContent = "계정을 만들고 있습니다…";
   try {
-    await registerAccount({ name: data.name, username: data.username, password: data.password });
-    window.location.href = "/preferences.html";
+    await registerAccount({
+      email: data.email,
+      nickname: data.nickname,
+      password: data.password,
+      passwordConfirm: data.passwordConfirm,
+    });
+    window.location.href = "/login.html?registered=true";
   } catch (error) {
-    message.textContent = error.message;
+    const fieldErrors = error.payload?.result;
+    message.textContent = fieldErrors && typeof fieldErrors === "object"
+      ? Object.values(fieldErrors)[0]
+      : error.message;
   } finally {
     submit.disabled = false;
   }
