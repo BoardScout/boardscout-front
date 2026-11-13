@@ -6,7 +6,7 @@ const list = document.querySelector("#recommendationList");
 const preferences = await getPreferences();
 const isTaste = preferences?.recommendationMode === "taste";
 // 같은 결과 화면을 추천 방식에 맞는 제목·설명·재선택 경로로 구성합니다.
-document.querySelector("#resultKicker").textContent = isTaste ? "YOUR TASTE, MATCHED" : "YOUR PICKS, CURATED";
+document.querySelector("#resultKicker").textContent = isTaste ? "내 취향과 가까운 게임" : "당신을 위한 추천";
 document.querySelector("#resultTitle").innerHTML = isTaste
   ? "좋아한 게임 다음에는<br /><em>이런 게임.</em>"
   : "오늘의 테이블에 맞는<br /><em>추천 게임.</em>";
@@ -27,7 +27,7 @@ list.innerHTML = games.length ? games.map((game, index) => `
       <p>${game.reason ?? "당신의 플레이 조건과 잘 맞는 게임입니다."}</p>
       <button class="text-link save-game" type="button" data-index="${index}">저장하기</button>
     </div>
-    <div class="match-score">${game.score ?? 86}<small>MATCH</small></div>
+    <div class="match-score">${game.score ?? 86}<small>일치도</small></div>
   </article>
 `).join("") : `<div class="empty-state">지금 조건에 맞는 게임이 없습니다.<br /><a class="text-link" href="/preferences.html">조건을 다시 고르기</a></div>`;
 

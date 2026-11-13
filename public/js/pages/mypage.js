@@ -20,7 +20,7 @@ const renderSaved = () => {
   const favorites = getLocalFavorites();
   savedList.innerHTML = favorites.length ? favorites.map((game) => `
     <article class="saved-item">
-      <div><h3>${game.localizedTitle ?? game.title}</h3><p>${game.category} · ${getPlayerLabel(game)} · ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.3)}</p></div>
+      <div><h3>${game.localizedTitle ?? game.nameKo ?? game.title ?? game.nameEn}${game.localizedTitle || game.nameKo ? `<small>${game.title ?? game.nameEn}</small>` : ""}</h3><p>${game.category} · ${getPlayerLabel(game)} · ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.3)}</p></div>
       <button class="text-link remove-favorite" type="button" data-id="${game.id}">삭제</button>
     </article>
   `).join("") : '<div class="empty-state">저장한 게임이 없습니다.<br><a class="text-link" href="/recommendations.html">추천 게임 보러가기</a></div>';

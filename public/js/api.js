@@ -30,6 +30,15 @@ export async function request(path, options = {}) {
 // 페이지 코드가 엔드포인트 문자열을 직접 조합하지 않도록 API 경계를 한곳에 모읍니다.
 export const coreApi = {
   health: () => request("/api/core/health"),
+  searchBoardGames: (query, page = 0, size = 20) => {
+    const params = new URLSearchParams({ query, page: String(page), size: String(size) });
+    return request(`/api/core/board-games?${params}`);
+  },
+  browseBoardGames: (query = "", cursor = null, size = 24) => {
+    const params = new URLSearchParams({ query, size: String(size) });
+    if (cursor !== null) params.set("cursor", String(cursor));
+    return request(`/api/core/board-games/cursor?${params}`);
+  },
   register: (body) => request("/api/core/auth/register", { method: "POST", body: JSON.stringify(body) }),
   login: (body) => request("/api/core/auth/login", { method: "POST", body: JSON.stringify(body) }),
   logout: () => request("/api/core/auth/logout", { method: "POST" }),
