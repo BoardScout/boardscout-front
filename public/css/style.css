@@ -273,6 +273,25 @@ button { color: inherit; }
 @keyframes themesMarquee { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
 
+/* Keep the editorial scale comfortably readable on desktop without changing mobile. */
+@media (min-width: 901px) {
+  body:not(.app-page) .announcement { font-size: 11px; }
+  body:not(.app-page) .main-nav { font-size: 14px; }
+  body:not(.app-page) .text-button { font-size: 12px; }
+  body:not(.app-page) .eyebrow { font-size: 12px; }
+  body:not(.app-page) .hero__description { font-size: 17px; line-height: 1.85; }
+  body:not(.app-page) .arrow-link { font-size: 13px; }
+  body:not(.app-page) .hero__scroll { font-size: 10px; }
+  body:not(.app-page) .section-label { font-size: 11px; }
+  body:not(.app-page) .recommend-chooser__signal span { font-size: 13px; }
+  body:not(.app-page) .recommend-path > span { font-size: 11px; }
+  body:not(.app-page) .recommend-path p { font-size: 14px; }
+  body:not(.app-page) .recommend-path b { font-size: 12px; }
+  body:not(.app-page) .filter,
+  body:not(.app-page) .rail-toggle { font-size: 11px; }
+  body:not(.app-page) .objects__footer { font-size: 13px; }
+}
+
 @media (max-width: 900px) {
   .site-header { grid-template-columns: 1fr auto; }
   .main-nav { position: fixed; inset: 0; z-index: -1; display: none; flex-direction: column; justify-content: center; align-items: center; gap: 28px; background: #0b0c0b; font-family: var(--display); font-size: 36px; }
