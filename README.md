@@ -39,7 +39,7 @@ npm run check
 npm run serve
 ```
 
-브라우저에서 `http://localhost:4173`을 엽니다. 홈에서 `지금 상황에 맞는 게임`과 `내 취향에 맞는 게임` 두 경로를 선택할 수 있습니다. Gateway 환경에서는 `/api/core/*`와 `/api/recommend/*`가 각각 Spring Boot와 FastAPI로 전달됩니다. 두 API가 아직 준비되지 않은 경우 로그인·취향·추천·저장은 BGG Reviews v3의 실제 게임 ID와 메타데이터를 반영한 브라우저 로컬 데모 모드로 동작합니다.
+브라우저에서 `http://localhost:4173`을 엽니다. 홈에서 `지금 상황에 맞는 게임`과 `내 취향에 맞는 게임` 두 경로를 선택할 수 있습니다. Gateway 환경에서는 `/api/v1/*`와 `/api/recommend/*`가 각각 Spring Boot와 FastAPI로 전달됩니다. 두 API가 아직 준비되지 않은 경우 로그인·취향·추천·저장은 BGG Reviews v3의 실제 게임 ID와 메타데이터를 반영한 브라우저 로컬 데모 모드로 동작합니다.
 
 컨테이너는 내부 포트 `4173`에서 정적 파일만 제공합니다. 운영 환경에서는 이 포트를 외부에 직접 공개하지 않고 edge Nginx가 프록시합니다.
 
