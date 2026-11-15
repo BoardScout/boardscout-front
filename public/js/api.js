@@ -1,4 +1,31 @@
 const DEFAULT_HEADERS = { "Content-Type": "application/json" };
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"]);
+
+const readCookie = (name) => {
+  // 쿠키 값은 URL 인코딩될 수 있으므로 이름이 일치하는 값만 골라 디코딩합니다.
+  const prefix = `${encodeURIComponent(name)}=`;
+  const cookie = document.cookie.split("; ").find((item) => item.startsWith(prefix));
+  return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+};
+
+let csrfRequest = null;
+
+async function getCsrfToken() {
+  const current = readCookie("XSRF-TOKEN");
+  if (current) return current;
+
+  // 동시에 여러 요청이 시작돼도 토큰 발급 API는 한 번만 호출합니다.
+  csrfRequest ??= fetch("/api/v1/auth/csrf", { credentials: "include" })
+    .then((response) => {
+      if (!response.ok) throw new ApiError("CSRF 토큰을 발급받지 못했습니다.", response.status);
+      const token = readCookie("XSRF-TOKEN");
+      if (!token) throw new ApiError("CSRF 토큰 쿠키가 없습니다.");
+      return token;
+    })
+    .finally(() => { csrfRequest = null; });
+
+  return csrfRequest;
+}
 
 // 화면에서 상태 코드와 서버 응답을 함께 처리할 수 있도록 fetch 오류를 표준화합니다.
 export class ApiError extends Error {
@@ -11,11 +38,18 @@ export class ApiError extends Error {
 }
 
 export async function request(path, options = {}) {
+  const method = (options.method ?? "GET").toUpperCase();
+  const headers = { ...DEFAULT_HEADERS, ...options.headers };
+  if (path.startsWith("/api/v1/") && !SAFE_METHODS.has(method)) {
+    // 쿠키는 브라우저가 자동 전송하지만 이 헤더는 현재 페이지의 JavaScript만 추가할 수 있습니다.
+    headers["X-XSRF-TOKEN"] = await getCsrfToken();
+  }
+
   // 인증 쿠키는 Spring과 FastAPI 프록시 요청에 모두 전달합니다.
   const response = await fetch(path, {
     credentials: "include",
     ...options,
-    headers: { ...DEFAULT_HEADERS, ...options.headers },
+    headers,
   });
   // 오류 응답도 JSON 또는 텍스트 형태를 보존해 각 폼에서 구체적인 메시지를 표시합니다.
   const contentType = response.headers.get("content-type") ?? "";
