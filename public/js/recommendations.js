@@ -69,6 +69,26 @@ export function normalizePreferences(preferences = {}) {
   };
 }
 
+// 브라우저에 저장한 설정에는 두 모드의 필드가 함께 들어 있다.
+// FastAPI는 선택한 모드에 없는 필드가 들어오면 422를 반환한다.
+export function toRecommendationRequest(preferences = {}) {
+  const normalized = normalizePreferences(preferences);
+  if (normalized.recommendationMode === "taste") {
+    return {
+      recommendationMode: "taste",
+      likedGameIds: normalized.likedGameIds,
+    };
+  }
+  return {
+    recommendationMode: "context",
+    playerCount: normalized.playerCount,
+    maxPlayTime: normalized.maxPlayTime,
+    difficulty: normalized.difficulty,
+    themes: normalized.themes,
+    playStyles: normalized.playStyles,
+  };
+}
+
 const overlapCount = (left, right) => left.filter((value) => right.includes(value)).length;
 
 export function scoreContextGames(preferences = {}) {
@@ -118,7 +138,7 @@ export function scoreGames(preferences = {}) {
 export async function getRecommendations() {
   const preferences = normalizePreferences(localSession.getPreferences() ?? {});
   try {
-    const payload = await recommendationApi.games(preferences);
+    const payload = await recommendationApi.games(toRecommendationRequest(preferences));
     // API 응답 래퍼 유무와 관계없이 추천 목록만 페이지에 전달합니다.
     return payload.result?.items ?? payload.items ?? payload;
   } catch {

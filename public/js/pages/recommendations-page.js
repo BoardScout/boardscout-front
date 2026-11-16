@@ -1,4 +1,4 @@
-import { getDifficultyLabel, getPlayerLabel, getPreferences, getRecommendations, toggleFavorite } from "../recommendations.js";
+import { getDifficultyLabel, getPlayerLabel, getPreferences, getRecommendations, toggleFavorite } from "../recommendations.js?v=20261116-2";
 import { coreApi } from "../api.js";
 import { initChrome, showToast } from "../ui.js";
 
@@ -6,7 +6,6 @@ initChrome();
 const list = document.querySelector("#recommendationList");
 const preferences = await getPreferences();
 const isTaste = preferences?.recommendationMode === "taste";
-// 같은 결과 화면을 추천 방식에 맞는 제목·설명·재선택 경로로 구성합니다.
 document.querySelector("#resultKicker").textContent = isTaste ? "내 취향과 가까운 게임" : "당신을 위한 추천";
 document.querySelector("#resultTitle").innerHTML = isTaste
   ? "좋아한 게임 다음에는<br /><em>이런 게임.</em>"
@@ -22,8 +21,9 @@ try {
   const payload = await coreApi.ratings();
   const ratings = payload.result ?? payload;
   savedRatings = new Map(ratings.map((item) => [Number(item.datasetItemId), Number(item.rating)]));
-} catch { /* 로그인 전에도 기본 추천 결과는 계속 표시합니다. */ }
-// 추천 결과는 현재 순서를 data-index로 연결해 저장 버튼에서 같은 게임을 찾습니다.
+} catch {
+  // 로그인하지 않았거나 별점 조회에 실패해도 앞서 받아 둔 추천 목록은 표시한다.
+}
 list.innerHTML = games.length ? games.map((game, index) => `
   <article class="recommendation-row">
     <div class="recommendation-art" aria-hidden="true"></div>
@@ -61,6 +61,7 @@ list.querySelectorAll(".rating-control").forEach((form) => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const game = games[Number(form.dataset.index)];
+    // 별점 API는 Spring의 게임 PK 대신 추천 모델이 쓰는 데이터셋 ID를 받는다.
     const datasetItemId = Number(game.gameId ?? game.id);
     const rating = Number(new FormData(form).get("rating"));
     if (!Number.isInteger(rating) || rating < 1 || rating > 10) {

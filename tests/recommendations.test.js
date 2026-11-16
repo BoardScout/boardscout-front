@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { normalizePreferences, scoreContextGames, scoreTasteGames } from "../public/js/recommendations.js";
+import {
+  normalizePreferences,
+  scoreContextGames,
+  scoreTasteGames,
+  toRecommendationRequest,
+} from "../public/js/recommendations.js";
 
 test("상황 추천은 인원과 최대 플레이 시간을 하드 필터로 사용한다", () => {
   const games = scoreContextGames({
@@ -43,4 +48,42 @@ test("이전 로컬 DTO도 새 상황 추천 계약으로 변환한다", () => {
   assert.equal(preference.playerCount, 2);
   assert.equal(preference.maxPlayTime, 30);
   assert.deepEqual(preference.themes, ["strategy"]);
+});
+
+test("상황 추천 요청에는 취향 추천 전용 likedGameIds를 포함하지 않는다", () => {
+  const request = toRecommendationRequest({
+    recommendationMode: "context",
+    playerCount: 2,
+    maxPlayTime: 90,
+    difficulty: 2,
+    themes: ["strategy"],
+    playStyles: ["engine"],
+    likedGameIds: [7, 15, 21],
+  });
+
+  assert.deepEqual(request, {
+    recommendationMode: "context",
+    playerCount: 2,
+    maxPlayTime: 90,
+    difficulty: 2,
+    themes: ["strategy"],
+    playStyles: ["engine"],
+  });
+});
+
+test("취향 추천 요청에는 상황 추천 전용 조건을 포함하지 않는다", () => {
+  const request = toRecommendationRequest({
+    recommendationMode: "taste",
+    playerCount: 2,
+    maxPlayTime: 90,
+    difficulty: 2,
+    themes: ["strategy"],
+    playStyles: ["engine"],
+    likedGameIds: [7, 15, 21],
+  });
+
+  assert.deepEqual(request, {
+    recommendationMode: "taste",
+    likedGameIds: [7, 15, 21],
+  });
 });
