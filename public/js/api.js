@@ -79,6 +79,12 @@ export const coreApi = {
   me: () => request("/api/v1/users/me"),
   preferences: () => request("/api/v1/users/me/preferences"),
   savePreferences: (body) => request("/api/v1/users/me/preferences", { method: "PUT", body: JSON.stringify(body) }),
+  ratings: () => request("/api/v1/users/me/ratings"),
+  saveRating: (datasetItemId, rating) => request(`/api/v1/users/me/ratings/${datasetItemId}`, {
+    method: "PUT",
+    body: JSON.stringify({ rating }),
+  }),
+  removeRating: (datasetItemId) => request(`/api/v1/users/me/ratings/${datasetItemId}`, { method: "DELETE" }),
   favorites: () => request("/api/v1/users/me/favorites"),
   addFavorite: (gameId) => request(`/api/v1/users/me/favorites/${gameId}`, { method: "POST" }),
   removeFavorite: (gameId) => request(`/api/v1/users/me/favorites/${gameId}`, { method: "DELETE" }),

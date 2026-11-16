@@ -1,4 +1,5 @@
 import { getDifficultyLabel, getPlayerLabel, getPreferences, getRecommendations, toggleFavorite } from "../recommendations.js";
+import { coreApi } from "../api.js";
 import { initChrome, showToast } from "../ui.js";
 
 initChrome();
@@ -16,6 +17,12 @@ document.querySelector("#resultLead").textContent = isTaste
 document.querySelector("#retryLink").href = isTaste ? "/taste.html" : "/preferences.html";
 
 const games = await getRecommendations();
+let savedRatings = new Map();
+try {
+  const payload = await coreApi.ratings();
+  const ratings = payload.result ?? payload;
+  savedRatings = new Map(ratings.map((item) => [Number(item.datasetItemId), Number(item.rating)]));
+} catch { /* 로그인 전에도 기본 추천 결과는 계속 표시합니다. */ }
 // 추천 결과는 현재 순서를 data-index로 연결해 저장 버튼에서 같은 게임을 찾습니다.
 list.innerHTML = games.length ? games.map((game, index) => `
   <article class="recommendation-row">
@@ -26,6 +33,16 @@ list.innerHTML = games.length ? games.map((game, index) => `
       <p>${getPlayerLabel(game)} · 약 ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.3)}</p>
       <p>${game.reason ?? "당신의 플레이 조건과 잘 맞는 게임입니다."}</p>
       <button class="text-link save-game" type="button" data-index="${index}">저장하기</button>
+      <form class="rating-control" data-index="${index}">
+        <label for="rating-${index}">내 별점</label>
+        <select id="rating-${index}" name="rating" aria-label="${game.localizedTitle ?? game.title} 별점">
+          <option value="">1~10점</option>
+          ${Array.from({ length: 10 }, (_, offset) => offset + 1).map((rating) => `
+            <option value="${rating}" ${savedRatings.get(Number(game.gameId ?? game.id)) === rating ? "selected" : ""}>${rating}점</option>
+          `).join("")}
+        </select>
+        <button class="text-link" type="submit">평가 저장</button>
+      </form>
     </div>
     <div class="match-score">${game.score ?? 86}<small>일치도</small></div>
   </article>
@@ -37,5 +54,25 @@ list.querySelectorAll(".save-game").forEach((button) => {
     const result = await toggleFavorite(game);
     button.textContent = result.saved ? "저장됨" : "저장하기";
     showToast(result.saved ? `${game.title} · 내 게임에 저장했습니다` : `${game.title} · 저장을 해제했습니다`);
+  });
+});
+
+list.querySelectorAll(".rating-control").forEach((form) => {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const game = games[Number(form.dataset.index)];
+    const datasetItemId = Number(game.gameId ?? game.id);
+    const rating = Number(new FormData(form).get("rating"));
+    if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
+      showToast("1점부터 10점 사이에서 별점을 선택해 주세요");
+      return;
+    }
+    try {
+      await coreApi.saveRating(datasetItemId, rating);
+      savedRatings.set(datasetItemId, rating);
+      showToast(`${game.localizedTitle ?? game.title} · ${rating}점을 저장했습니다`);
+    } catch (error) {
+      showToast(error.status === 401 ? "별점을 저장하려면 로그인해 주세요" : "별점을 저장하지 못했습니다");
+    }
   });
 });

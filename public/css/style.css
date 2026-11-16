@@ -145,6 +145,9 @@ button { color: inherit; }
 .recommendation-copy h2 { margin: 0 0 7px; font-family: var(--display); font-size: 28px; font-weight: 500; }
 .recommendation-copy h2 small { display: block; margin-top: 3px; color: #77736c; font-family: var(--sans); font-size: 10px; font-weight: 400; }
 .recommendation-copy p { margin: 0; color: #67635c; font-size: 11px; line-height: 1.7; }
+.rating-control { display: flex; align-items: center; gap: 10px; margin-top: 12px; color: #67635c; font-size: 10px; }
+.rating-control select { min-width: 84px; padding: 7px 28px 7px 9px; border: 1px solid rgba(17,17,15,.22); color: var(--ink); background: var(--paper); }
+.rating-control select:focus { outline: 2px solid var(--orange); outline-offset: 2px; }
 .match-score { min-width: 76px; color: var(--orange); font-family: var(--display); font-size: 32px; text-align: right; }
 .match-score small { display: block; color: #6d6962; font-family: var(--sans); font-size: 8px; letter-spacing: .12em; }
 .saved-list { display: grid; gap: 12px; }
@@ -221,6 +224,7 @@ button { color: inherit; }
   .form-actions { align-items: stretch; flex-direction: column; }
   .recommendation-row { grid-template-columns: 1fr; gap: 18px; padding: 16px 0 28px; }
   .recommendation-art { aspect-ratio: 16/10; }
+  .rating-control { align-items: flex-start; flex-wrap: wrap; }
   .match-score { grid-column: 1; }
   .catalog-page { width: min(100% - 32px, 1320px); }
   .catalog-search > div { align-items: stretch; flex-direction: column; }
