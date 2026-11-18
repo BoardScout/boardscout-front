@@ -17,6 +17,7 @@ if (current?.recommendationMode === "context") {
   }
 }
 
+// 선택한 조건을 저장하고 추천 결과 화면으로 이동합니다.
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = new FormData(form);

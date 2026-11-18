@@ -1,6 +1,7 @@
 import { coreApi, recommendationApi } from "./api.js";
 import { localSession } from "./storage.js";
 
+// 테마 코드를 화면에 표시할 한국어 이름으로 바꾸는 표입니다.
 export const THEME_LABELS = {
   strategy: "전략·경영",
   party: "파티·심리전",
@@ -12,6 +13,7 @@ export const THEME_LABELS = {
   building: "건설·경제",
 };
 
+// 플레이 방식 코드를 화면에 표시할 한국어 문구로 바꾸는 표입니다.
 export const STYLE_LABELS = {
   coop: "함께 협력하기",
   social: "대화·추리하기",
@@ -41,18 +43,22 @@ export const GAMES = [
   { id: 56, bggId: 162886, title: "Spirit Island", localizedTitle: "정령섬", category: "협력 전략", minPlayers: 1, maxPlayers: 4, maxPlayTime: 120, minAge: 13, complexity: 4.0289, averageRating: 8.36078, themes: ["strategy", "adventure"], playStyles: ["coop", "engine", "solo"], reason: "서로 다른 정령의 능력을 조합하는 고난도 협력 전략 게임" },
 ];
 
+// 화면의 3단계 난이도를 BGG complexity 점수의 중심값으로 바꾸는 표입니다.
 const difficultyCenter = { 1: 1.5, 2: 2.3, 3: 3.5 };
 
+// 최소·최대 인원이 같으면 한 값만, 다르면 범위로 표시합니다.
 export const getPlayerLabel = (game) => game.minPlayers === game.maxPlayers
   ? `${game.minPlayers}인`
   : `${game.minPlayers}–${game.maxPlayers}인`;
 
+// complexity 점수를 '가볍게', '적당히', '깊게' 중 하나로 바꿉니다.
 export const getDifficultyLabel = (complexity) => {
   if (complexity < 1.8) return "가볍게";
   if (complexity < 2.8) return "적당히";
   return "깊게";
 };
 
+// 저장된 취향을 현재 추천 형식으로 정리합니다. 없는 값은 기본값이나 null로 채웁니다.
 export function normalizePreferences(preferences = {}) {
   // 이전 DTO 필드도 현재 추천 계약으로 변환해 저장된 사용자 데이터와의 호환성을 유지합니다.
   const legacyGenres = Array.isArray(preferences.genres) ? preferences.genres : [];
@@ -66,8 +72,8 @@ export function normalizePreferences(preferences = {}) {
   };
 }
 
-// 브라우저에 저장한 설정에는 두 모드의 필드가 함께 들어 있다.
-// FastAPI는 선택한 모드에 없는 필드가 들어오면 422를 반환한다.
+// 브라우저에 저장한 설정에는 두 모드의 필드가 함께 들어 있습니다.
+// FastAPI는 선택한 모드에 없는 필드가 들어오면 422를 반환합니다.
 export function toRecommendationRequest(preferences = {}) {
   const normalized = normalizePreferences(preferences);
   if (normalized.recommendationMode === "taste") {
@@ -83,8 +89,10 @@ export function toRecommendationRequest(preferences = {}) {
   };
 }
 
+// 두 목록에 모두 들어 있는 값의 개수를 셉니다.
 const overlapCount = (left, right) => left.filter((value) => right.includes(value)).length;
 
+// 서버 없이 상황 추천을 계산합니다. 인원·시간 조건을 통과한 게임에 점수를 매겨 높은 순으로 정렬합니다.
 export function scoreContextGames(preferences = {}) {
   const preference = normalizePreferences(preferences);
   // 인원과 시간은 플레이 가능 여부를 결정하므로 점수가 아닌 필수 조건으로 먼저 거릅니다.
@@ -104,9 +112,10 @@ export function scoreContextGames(preferences = {}) {
   }).sort((a, b) => b.score - a.score || b.averageRating - a.averageRating);
 }
 
-// 서버가 없을 때의 대체 목록. 별점 기반 계산은 서버에서만 하고 여기서는 평점 순으로 보여준다.
+// 서버가 없을 때의 대체 목록입니다. 별점 기반 계산은 서버에서만 하고 여기서는 평점 순으로 보여줍니다.
 export const scoreTasteGames = () => [...GAMES].sort((a, b) => b.averageRating - a.averageRating);
 
+// 추천 모드에 맞는 점수 계산 함수를 골라 실행합니다.
 export function scoreGames(preferences = {}) {
   const preference = normalizePreferences(preferences);
   return preference.recommendationMode === "taste"
@@ -114,6 +123,7 @@ export function scoreGames(preferences = {}) {
     : scoreContextGames(preference);
 }
 
+// 추천 서버에서 상황 추천을 받고, 실패하면 브라우저에서 계산한 목록으로 대신합니다.
 export async function getRecommendations() {
   const preferences = normalizePreferences(localSession.getPreferences() ?? {});
   try {
@@ -126,7 +136,7 @@ export async function getRecommendations() {
   }
 }
 
-// 취향 추천: 별점 3개 이상이면 개인화, 아니면 인기 게임. 10개씩 두 번 보여주려고 20개를 받는다.
+// 취향 추천: 별점 3개 이상이면 개인화, 아니면 인기 게임입니다. 10개씩 두 번 보여주려고 20개를 받습니다.
 export async function getTasteRecommendations() {
   try {
     const payload = await recommendationApi.games({ recommendationMode: "taste" }, 20);
@@ -136,6 +146,7 @@ export async function getTasteRecommendations() {
   }
 }
 
+// 추천 취향을 정리해 로컬에 저장하고 서버에도 저장을 시도합니다. 서버 저장에 실패해도 정리한 값을 반환합니다.
 export async function savePreferences(payload) {
   const normalized = normalizePreferences(payload);
   // 이동 직후에도 값을 읽을 수 있도록 로컬에 먼저 저장한 뒤 서버와 동기화합니다.
@@ -143,6 +154,7 @@ export async function savePreferences(payload) {
   try { return await coreApi.savePreferences(normalized); } catch { return normalized; }
 }
 
+// 서버에 저장된 취향을 조회하고, 실패하면 로컬에 저장된 값을 사용합니다. 둘 다 없으면 null입니다.
 export async function getPreferences() {
   try {
     const payload = await coreApi.preferences();
@@ -153,6 +165,7 @@ export async function getPreferences() {
   }
 }
 
+// 게임을 저장 목록에 넣거나 뺍니다. 저장 여부와 갱신된 목록을 반환합니다.
 export async function toggleFavorite(game) {
   const current = localSession.getFavorites();
   const exists = current.some((item) => item.id === game.id);
@@ -166,4 +179,5 @@ export async function toggleFavorite(game) {
   return { saved: !exists, favorites: next };
 }
 
+// 브라우저에 저장된 게임 목록을 읽습니다.
 export const getLocalFavorites = () => localSession.getFavorites();

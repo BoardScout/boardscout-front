@@ -11,6 +11,7 @@ const bagCount = document.querySelector("#bagCount");
 
 if (bagCount) bagCount.textContent = String(getLocalFavorites().length);
 
+// 주소의 id에 해당하는 게임이 없거나 소개 정보가 부족하면 안내 문구를, 있으면 상세 화면을 그립니다.
 if (!game?.description || !game?.imageUrl) {
   container.innerHTML = `<div class="game-detail__error"><div><h1>게임을 찾지 못했습니다</h1><p>메인 화면에서 소개된 게임을 다시 선택해 주세요.</p><a class="game-detail__back" href="/index.html#new">오늘의 게임으로 돌아가기</a></div></div>`;
 } else {

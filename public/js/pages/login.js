@@ -5,10 +5,12 @@ initChrome();
 const form = document.querySelector("#loginForm");
 const message = document.querySelector("#formMessage");
 
+// 회원가입 직후 넘어온 경우 가입 완료 안내를 먼저 보여줍니다.
 if (new URLSearchParams(window.location.search).get("registered") === "true") {
   message.textContent = "회원가입이 완료되었습니다. 새 계정으로 로그인해 주세요.";
 }
 
+// 로그인 폼을 제출하면 로그인하고 취향 입력 화면으로 이동합니다. 실패하면 오류 메시지를 보여줍니다.
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const submit = form.querySelector("button[type='submit']");

@@ -37,6 +37,7 @@ savedList.addEventListener("click", async (event) => {
   showToast("저장 목록에서 삭제했습니다");
 });
 
+// 로그아웃한 뒤 첫 화면으로 이동합니다.
 document.querySelector("#logoutButton").addEventListener("click", async () => {
   await logoutAccount();
   window.location.href = "/";

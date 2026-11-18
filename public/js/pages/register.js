@@ -5,6 +5,7 @@ initChrome();
 const form = document.querySelector("#registerForm");
 const message = document.querySelector("#formMessage");
 
+// 가입 폼을 제출하면 입력을 검사한 뒤 회원가입을 요청하고, 성공하면 로그인 화면으로 이동합니다.
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(form));

@@ -1,3 +1,4 @@
+// 모바일 메뉴 버튼의 열기·닫기 동작을 연결합니다.
 export function initChrome() {
   const menuButton = document.querySelector("#menuButton");
   const nav = document.querySelector(".main-nav");
@@ -16,6 +17,7 @@ export function initChrome() {
   }));
 }
 
+// 짧은 안내 메시지를 약 2.2초 동안 보여줍니다.
 export function showToast(message) {
   // 토스트가 없는 하위 페이지에서도 같은 피드백 함수를 사용할 수 있도록 필요할 때 생성합니다.
   let toast = document.querySelector("#toast");
@@ -33,6 +35,7 @@ export function showToast(message) {
   showToast.timer = window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
 }
 
+// .reveal 요소가 화면에 들어올 때 나타나는 효과를 적용합니다.
 export function initReveal() {
   // IntersectionObserver 미지원 환경에서는 콘텐츠를 숨기지 않고 즉시 표시합니다.
   if (!("IntersectionObserver" in window)) {

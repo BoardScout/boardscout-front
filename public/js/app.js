@@ -7,10 +7,12 @@ initReveal();
 const header = document.querySelector("#siteHeader");
 const bagCount = document.querySelector("#bagCount");
 const rail = document.querySelector("#recommendationRail");
+// 저장한 게임 개수를 헤더의 가방 숫자로 표시합니다.
 if (bagCount) bagCount.textContent = String(getLocalFavorites().length);
 // 첫 화면을 벗어나면 헤더를 상단에 고정해 주요 메뉴 접근을 유지합니다.
 window.addEventListener("scroll", () => header?.classList.toggle("is-fixed", window.scrollY > 90));
 
+// 카테고리 필터 버튼을 누르면 해당 분류의 카드만 남기고 나머지는 숨깁니다.
 document.querySelectorAll(".filter").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".filter").forEach((item) => item.classList.remove("is-active"));
@@ -24,6 +26,7 @@ document.querySelectorAll(".filter").forEach((button) => {
   });
 });
 
+// 카드의 저장 버튼으로 저장 여부를 바꾸고, 버튼 문구와 저장 개수를 갱신합니다.
 document.querySelectorAll(".product-card .quick-add").forEach((button) => {
   button.addEventListener("click", async () => {
     const game = GAMES.find(({ id }) => id === Number(button.dataset.gameId));
@@ -43,10 +46,12 @@ document.querySelector("#searchOpen")?.addEventListener("click", () => {
   document.body.classList.add("is-locked");
   window.setTimeout(() => searchInput.focus(), 20);
 });
+// 닫기 버튼을 누르면 검색 패널을 숨기고 본문 스크롤 잠금을 풉니다.
 document.querySelector("#searchClose")?.addEventListener("click", () => {
   searchPanel.hidden = true;
   document.body.classList.remove("is-locked");
 });
+// Esc 키로도 열려 있는 검색 패널을 닫을 수 있게 합니다.
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && searchPanel && !searchPanel.hidden) {
     searchPanel.hidden = true;

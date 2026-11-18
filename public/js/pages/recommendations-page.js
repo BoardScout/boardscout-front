@@ -28,12 +28,13 @@ try {
   const ratings = payload.result ?? payload;
   savedRatings = new Map(ratings.map((item) => [Number(item.datasetItemId), Number(item.rating)]));
 } catch {
-  // 로그인하지 않았거나 별점 조회에 실패해도 앞서 받아 둔 추천 목록은 표시한다.
+  // 로그인하지 않았거나 별점 조회에 실패해도 앞서 받아 둔 추천 목록은 표시합니다.
 }
-// 취향 추천은 10개씩 보여주고 버튼으로 다음 10개를 연다.
+// 취향 추천은 10개씩 보여주고 버튼으로 다음 10개를 엽니다.
 let visible = isTaste ? PAGE_SIZE : games.length;
 const showMore = document.querySelector("#showMore");
 
+// 추천 목록을 화면에 그립니다. 취향 추천은 visible 개수만큼만 보여줍니다.
 function render() {
 list.innerHTML = games.length ? games.slice(0, visible).map((game, index) => `
   <article class="recommendation-row">
@@ -62,6 +63,7 @@ if (showMore) showMore.hidden = visible >= games.length;
 bindRows();
 }
 
+// 새로 그린 목록의 저장 버튼과 별점 폼에 이벤트를 연결합니다.
 function bindRows() {
 
 list.querySelectorAll(".save-game").forEach((button) => {
@@ -77,7 +79,7 @@ list.querySelectorAll(".rating-control").forEach((form) => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const game = games[Number(form.dataset.index)];
-    // 별점 API는 Spring의 게임 PK 대신 추천 모델이 쓰는 데이터셋 ID를 받는다.
+    // 별점 API는 Spring의 게임 PK 대신 추천 모델이 쓰는 데이터셋 ID를 받습니다.
     const datasetItemId = Number(game.gameId ?? game.id);
     const rating = Number(new FormData(form).get("rating"));
     if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
@@ -95,6 +97,7 @@ list.querySelectorAll(".rating-control").forEach((form) => {
 });
 }
 
+// 더 보기 버튼을 누를 때마다 10개씩 더 보여줍니다.
 showMore?.addEventListener("click", () => {
   visible += PAGE_SIZE;
   render();
