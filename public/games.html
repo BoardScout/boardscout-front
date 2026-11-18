@@ -7,7 +7,7 @@
     <title>전체 게임 — BOARDSCOUT</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
-  <body class="app-page">
+  <body class="app-page catalog-theme night">
     <a class="skip-link" href="#main">본문으로 바로가기</a>
     <header class="site-header">
       <a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a>
@@ -23,18 +23,21 @@
       </div>
     </header>
     <main id="main" class="page-shell catalog-page">
-      <h1 class="page-title">다음에 펼칠 게임을<br /><em>천천히 둘러보세요.</em></h1>
-      <p class="page-lead">이름으로 찾아 천천히 둘러보고, 마음에 드는 게임에 별점을 남겨 보세요.</p>
-
-      <form class="catalog-search" id="catalogSearch" role="search">
-        <label class="sr-only" for="catalogQuery">게임 이름</label>
+      <header class="catalog-head">
         <div>
-          <input id="catalogQuery" type="search" placeholder="한글 또는 영문 게임 이름" autocomplete="off" maxlength="100" />
-          <button class="primary-button" type="submit">검색</button>
+          <h1 class="catalog-title">전체 게임</h1>
+          <p class="catalog-lead">표지를 눌러 자세히 보고, 마음에 드는 게임에 별점을 남겨 보세요.</p>
         </div>
-      </form>
+        <form class="catalog-search" id="catalogSearch" role="search">
+          <label class="sr-only" for="catalogQuery">게임 이름</label>
+          <div>
+            <input id="catalogQuery" type="search" placeholder="게임 이름 검색 (한글·영문)" autocomplete="off" maxlength="100" />
+            <button type="submit">검색</button>
+          </div>
+        </form>
+      </header>
 
-      <p class="catalog-status" id="catalogStatus" role="status" aria-live="polite">게임 목록을 불러오고 있습니다…</p>
+      <p class="catalog-status" id="catalogStatus" role="status" aria-live="polite">게임 목록을 불러오는 중…</p>
       <section class="catalog-grid" id="catalogGrid" aria-label="전체 게임 목록"></section>
       <div class="catalog-more">
         <button class="secondary-button" id="loadMore" type="button" hidden>게임 더 보기</button>

@@ -62,6 +62,14 @@ const normalizeGame = (game) => {
 // 카드를 그릴 때 게임 정보를 보관했다가 상세 창에서 id로 다시 찾습니다.
 const gamesById = new Map();
 
+// 서버·내장 데이터의 테마 코드를 카드 겉에 보여 줄 한글 이름으로 바꿉니다.
+const THEME_LABELS = { strategy: "전략", party: "파티", adventure: "모험", mystery: "추리", scifi: "SF", family: "가족", history: "역사", building: "건설" };
+const themeTags = (game) => {
+  const fromThemes = (game.themes ?? []).map((code) => THEME_LABELS[code]).filter(Boolean);
+  const tags = fromThemes.length ? fromThemes : String(game.category ?? "").split(/\s+/).filter(Boolean);
+  return tags.slice(0, 2);
+};
+
 // 서버가 없을 때 내장 게임 목록에서 커서 이후의 게임을 한 페이지만큼 잘라 반환합니다.
 const localPage = (query, after) => {
   const keyword = query.toLocaleLowerCase("ko");
@@ -82,7 +90,7 @@ const fetchPage = async () => {
     const payload = await coreApi.browseBoardGames(activeQuery, cursor, PAGE_SIZE);
     return payload.result ?? payload;
   } catch {
-    return localPage(activeQuery, cursor);
+    return { ...localPage(activeQuery, cursor), offline: true };
   }
 };
 
@@ -95,22 +103,22 @@ const renderCard = (rawGame) => {
   const players = Number.isFinite(game.minPlayers) && Number.isFinite(game.maxPlayers)
     ? getPlayerLabel(game)
     : "인원 정보 없음";
-  const playTime = game.maxPlayTime ? `${game.maxPlayTime}분 이내` : "시간 정보 없음";
-  const difficulty = game.complexity ? getDifficultyLabel(game.complexity) : "난이도 정보 없음";
+  const playTime = game.maxPlayTime ? `${game.maxPlayTime}분` : "시간 정보 없음";
+  const facts = [players, playTime].filter(Boolean);
   return `
     <article class="catalog-card" data-game-id="${escapeHtml(game.id)}">
-      <div class="catalog-card__image" data-open-detail role="button" tabindex="0" aria-label="${escapeHtml(game.localizedTitle)} 상세 보기">
-        ${imageUrl
-          ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(game.localizedTitle)} 보드게임 표지" loading="lazy" />`
-          : `<span aria-hidden="true">${escapeHtml(game.localizedTitle.slice(0, 1))}</span>`}
+      <div class="catalog-card__cover">
+        <div class="catalog-card__image" data-open-detail role="button" tabindex="0" aria-label="${escapeHtml(game.localizedTitle)} 상세 보기">
+          ${imageUrl
+            ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(game.localizedTitle)} 보드게임 표지" loading="lazy" />`
+            : `<span aria-hidden="true">${escapeHtml(game.localizedTitle.slice(0, 1))}</span>`}
+        </div>
+        ${themeTags(game).length ? `<ul class="catalog-card__tags" aria-label="테마">${themeTags(game).map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : ""}
+        <button class="catalog-save" type="button" data-game-id="${escapeHtml(game.id)}" aria-pressed="${saved}">${saved ? "관심 등록됨" : "관심 등록"}</button>
+        <div class="catalog-card__rate">${starRatingHtml(game.id, game.localizedTitle, savedRatings.get(getDatasetItemId(game)))}</div>
       </div>
-      <div class="catalog-card__copy">
-        <h2 data-open-detail role="button" tabindex="0">${escapeHtml(game.localizedTitle)}<small>${escapeHtml(game.title || "")}</small></h2>
-        ${starRatingHtml(game.id, game.localizedTitle, savedRatings.get(getDatasetItemId(game)))}
-        <p class="catalog-card__facts">${[game.category, players, playTime, difficulty].filter(Boolean).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</p>
-        ${game.reason ? `<p class="catalog-card__description">${escapeHtml(game.reason)}</p>` : ""}
-        <button class="save-game catalog-save" type="button" data-game-id="${escapeHtml(game.id)}" aria-pressed="${saved}">${saved ? "관심 등록됨" : "관심 등록"}</button>
-      </div>
+      <h2 data-open-detail role="button" tabindex="0">${escapeHtml(game.localizedTitle)}<small>${escapeHtml(game.title || "")}</small></h2>
+      <p class="catalog-card__facts">${facts.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</p>
     </article>`;
 };
 
@@ -119,7 +127,8 @@ const load = async ({ reset = false } = {}) => {
   if (loading) return;
   loading = true;
   loadMore.disabled = true;
-  status.textContent = reset ? "검색 결과를 불러오고 있습니다…" : "게임 목록을 불러오고 있습니다…";
+  status.textContent = "불러오는 중…";
+  grid.setAttribute("aria-busy", "true");
   if (reset) {
     cursor = null;
     grid.innerHTML = "";
@@ -131,9 +140,14 @@ const load = async ({ reset = false } = {}) => {
   cursor = page.nextCursor ?? null;
   loadMore.hidden = !page.hasNext;
   loadMore.disabled = false;
-  status.textContent = grid.children.length
-    ? `${grid.children.length}개의 게임을 보고 있습니다.${page.hasNext ? " 더 불러올 수 있습니다." : " 마지막 게임까지 불러왔습니다."}`
-    : "찾는 이름의 게임이 없습니다. 다른 이름으로 검색해 보세요.";
+  grid.removeAttribute("aria-busy");
+  const count = grid.querySelectorAll(".catalog-card").length;
+  if (!count) {
+    status.textContent = "";
+    grid.innerHTML = `<div class="empty-state">${activeQuery ? `‘${escapeHtml(activeQuery)}’와 맞는 게임이 없어요.<br />철자를 확인하거나 영문 이름으로 찾아보세요.` : "표시할 게임이 없어요."}${activeQuery ? '<br /><button class="text-link" type="button" data-reset-search>전체 게임 보기</button>' : ""}</div>`;
+  } else {
+    status.textContent = `${count}개의 게임`;
+  }
   loading = false;
 };
 
@@ -189,6 +203,14 @@ grid.addEventListener("keydown", (event) => {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   activeQuery = queryInput.value.trim();
+  load({ reset: true });
+});
+
+// 검색 결과가 없을 때 나오는 버튼으로 검색어를 지우고 전체 목록으로 돌아갑니다.
+grid.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-reset-search]")) return;
+  queryInput.value = "";
+  activeQuery = "";
   load({ reset: true });
 });
 
