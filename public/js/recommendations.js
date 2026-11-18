@@ -63,9 +63,6 @@ export function normalizePreferences(preferences = {}) {
     difficulty: Number(preferences.difficulty) || null,
     themes: Array.isArray(preferences.themes) ? preferences.themes : legacyGenres,
     playStyles: Array.isArray(preferences.playStyles) ? preferences.playStyles : [],
-    likedGameIds: Array.isArray(preferences.likedGameIds)
-      ? preferences.likedGameIds.map(Number).filter(Number.isFinite)
-      : [],
   };
 }
 
@@ -74,10 +71,7 @@ export function normalizePreferences(preferences = {}) {
 export function toRecommendationRequest(preferences = {}) {
   const normalized = normalizePreferences(preferences);
   if (normalized.recommendationMode === "taste") {
-    return {
-      recommendationMode: "taste",
-      likedGameIds: normalized.likedGameIds,
-    };
+    return { recommendationMode: "taste" };
   }
   return {
     recommendationMode: "context",
@@ -110,28 +104,13 @@ export function scoreContextGames(preferences = {}) {
   }).sort((a, b) => b.score - a.score || b.averageRating - a.averageRating);
 }
 
-export function scoreTasteGames(preferences = {}) {
-  const preference = normalizePreferences(preferences);
-  const liked = GAMES.filter((game) => preference.likedGameIds.includes(game.id));
-  if (!liked.length) return [...GAMES].sort((a, b) => b.averageRating - a.averageRating);
-
-  // 좋아한 게임들의 공통 테마와 플레이 방식, 평균 복잡도로 간단한 취향 프로필을 만듭니다.
-  const themeProfile = liked.flatMap((game) => game.themes);
-  const styleProfile = liked.flatMap((game) => game.playStyles);
-  const averageComplexity = liked.reduce((sum, game) => sum + game.complexity, 0) / liked.length;
-  return GAMES.filter((game) => !preference.likedGameIds.includes(game.id)).map((game) => {
-    const themeScore = overlapCount([...new Set(themeProfile)], game.themes) * 10;
-    const styleScore = overlapCount([...new Set(styleProfile)], game.playStyles) * 8;
-    const complexityScore = Math.max(0, 20 - Math.abs(game.complexity - averageComplexity) * 10);
-    const ratingScore = Math.max(0, (game.averageRating - 6.5) * 4);
-    return { ...game, score: Math.round(Math.min(98, 30 + themeScore + styleScore + complexityScore + ratingScore)) };
-  }).sort((a, b) => b.score - a.score || b.averageRating - a.averageRating);
-}
+// 서버가 없을 때의 대체 목록. 별점 기반 계산은 서버에서만 하고 여기서는 평점 순으로 보여준다.
+export const scoreTasteGames = () => [...GAMES].sort((a, b) => b.averageRating - a.averageRating);
 
 export function scoreGames(preferences = {}) {
   const preference = normalizePreferences(preferences);
   return preference.recommendationMode === "taste"
-    ? scoreTasteGames(preference)
+    ? scoreTasteGames()
     : scoreContextGames(preference);
 }
 
@@ -144,6 +123,16 @@ export async function getRecommendations() {
   } catch {
     // 추천 서버가 없으면 같은 입력으로 브라우저 내 점수 계산을 수행합니다.
     return scoreGames(preferences);
+  }
+}
+
+// 취향 추천: 별점 3개 이상이면 개인화, 아니면 인기 게임. 10개씩 두 번 보여주려고 20개를 받는다.
+export async function getTasteRecommendations() {
+  try {
+    const payload = await recommendationApi.games({ recommendationMode: "taste" }, 20);
+    return payload.result;
+  } catch {
+    return { items: scoreTasteGames().slice(0, 20), personalized: false, ratingCount: 0, minRatingsRequired: 3 };
   }
 }
 

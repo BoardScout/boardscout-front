@@ -10,7 +10,7 @@ document.querySelector("#accountName").textContent = user?.name || user?.usernam
 document.querySelector("#accountId").textContent = user?.username || "로그인 전";
 document.querySelector("#preferenceSummary").textContent = preferences
   ? preferences.recommendationMode === "taste"
-    ? `좋아한 게임 ${preferences.likedGameIds.length}개 기반`
+    ? "내 별점 기반 추천"
     : `${preferences.playerCount ?? "-"}인 · ${preferences.maxPlayTime ?? "-"}분 · 난이도 ${preferences.difficulty ?? "-"}`
   : "아직 저장된 취향이 없습니다.";
 

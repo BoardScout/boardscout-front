@@ -96,5 +96,5 @@ export const coreApi = {
 export const recommendationApi = {
   health: () => request("/api/v1/recommendations/health"),
   me: () => request("/api/v1/recommendations/me"),
-  games: (body) => request("/api/v1/recommendations/games", { method: "POST", body: JSON.stringify(body) }),
+  games: (body, limit = 12) => request(`/api/v1/recommendations/games?limit=${limit}`, { method: "POST", body: JSON.stringify(body) }),
 };

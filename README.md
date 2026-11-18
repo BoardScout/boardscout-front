@@ -8,7 +8,7 @@
 - `/register.html`: 회원가입
 - `/login.html`: 로그인
 - `/preferences.html`: 인원·시간·난이도·테마·플레이 방식 설정
-- `/taste.html`: 좋아한 게임 3개 이상으로 취향 설정
+- `/taste.html`: 내 별점 기반 취향 추천(별점 3개 미만·비로그인은 인기 게임)
 - `/recommendations.html`: 추천 결과와 저장
 - `/mypage.html`: 취향과 저장한 게임 확인
 

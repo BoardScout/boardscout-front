@@ -1,21 +1,27 @@
-import { getDifficultyLabel, getPlayerLabel, getPreferences, getRecommendations, toggleFavorite } from "../recommendations.js?v=20261116-2";
+import { getDifficultyLabel, getPlayerLabel, getRecommendations, getTasteRecommendations, toggleFavorite } from "../recommendations.js?v=20261119-1";
 import { coreApi } from "../api.js";
 import { initChrome, showToast } from "../ui.js";
 
 initChrome();
 const list = document.querySelector("#recommendationList");
-const preferences = await getPreferences();
-const isTaste = preferences?.recommendationMode === "taste";
-document.querySelector("#resultKicker").textContent = isTaste ? "내 취향과 가까운 게임" : "당신을 위한 추천";
-document.querySelector("#resultTitle").innerHTML = isTaste
-  ? "좋아한 게임 다음에는<br /><em>이런 게임.</em>"
-  : "오늘의 테이블에 맞는<br /><em>추천 게임.</em>";
-document.querySelector("#resultLead").textContent = isTaste
-  ? "선택한 게임의 테마, 플레이 방식, 복잡도가 가까운 순서입니다. 이미 고른 게임은 결과에서 제외했습니다."
-  : "인원과 시간으로 후보를 좁히고 난이도, 테마, 플레이 방식의 일치도를 종합했습니다.";
-document.querySelector("#retryLink").href = isTaste ? "/taste.html" : "/preferences.html";
+const isTaste = document.body.dataset.mode === "taste";
+const PAGE_SIZE = 10;
+let games;
+let tasteInfo = null;
+if (isTaste) {
+  tasteInfo = await getTasteRecommendations();
+  games = tasteInfo.items;
+  document.querySelector("#resultLead").textContent = tasteInfo.personalized
+    ? "내가 남긴 별점과 비슷한 게임을 위로, 낮게 준 게임과 비슷한 게임은 아래로 정렬했습니다. 이미 평가한 게임은 제외했습니다."
+    : "지금은 평점이 높은 인기 게임을 보여드립니다.";
+  document.querySelector("#tasteNotice").textContent = tasteInfo.personalized
+    ? `별점 ${tasteInfo.ratingCount}개를 반영했어요. 별점을 더 남기면 추천이 더 정확해집니다.`
+    : `로그인하고 게임에 별점을 ${tasteInfo.minRatingsRequired}개 이상 남기면 내 취향 추천을 받을 수 있어요. (현재 ${tasteInfo.ratingCount}개)`;
+} else {
+  games = await getRecommendations();
+  document.querySelector("#retryLink").href = "/preferences.html";
+}
 
-const games = await getRecommendations();
 let savedRatings = new Map();
 try {
   const payload = await coreApi.ratings();
@@ -24,7 +30,12 @@ try {
 } catch {
   // 로그인하지 않았거나 별점 조회에 실패해도 앞서 받아 둔 추천 목록은 표시한다.
 }
-list.innerHTML = games.length ? games.map((game, index) => `
+// 취향 추천은 10개씩 보여주고 버튼으로 다음 10개를 연다.
+let visible = isTaste ? PAGE_SIZE : games.length;
+const showMore = document.querySelector("#showMore");
+
+function render() {
+list.innerHTML = games.length ? games.slice(0, visible).map((game, index) => `
   <article class="recommendation-row">
     <div class="recommendation-art" aria-hidden="true"></div>
     <div class="recommendation-copy">
@@ -47,6 +58,11 @@ list.innerHTML = games.length ? games.map((game, index) => `
     <div class="match-score">${game.score ?? 86}<small>일치도</small></div>
   </article>
 `).join("") : `<div class="empty-state">지금 조건에 맞는 게임이 없습니다.<br /><a class="text-link" href="/preferences.html">조건을 다시 고르기</a></div>`;
+if (showMore) showMore.hidden = visible >= games.length;
+bindRows();
+}
+
+function bindRows() {
 
 list.querySelectorAll(".save-game").forEach((button) => {
   button.addEventListener("click", async () => {
@@ -77,3 +93,10 @@ list.querySelectorAll(".rating-control").forEach((form) => {
     }
   });
 });
+}
+
+showMore?.addEventListener("click", () => {
+  visible += PAGE_SIZE;
+  render();
+});
+render();
