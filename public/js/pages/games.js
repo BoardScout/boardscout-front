@@ -1,6 +1,7 @@
 import { coreApi } from "../api.js";
 import { GAMES, getDifficultyLabel, getLocalFavorites, getPlayerLabel, toggleFavorite } from "../recommendations.js";
 import { initChrome, showToast } from "../ui.js";
+import { bindStarRatings, getDatasetItemId, loadRatings, starRatingHtml } from "../star-rating.js";
 import { getKoGame, getGameImage } from "../game-catalog-ko.js";
 
 initChrome();
@@ -14,6 +15,7 @@ const loadMore = document.querySelector("#loadMore");
 let cursor = null;
 let activeQuery = "";
 let loading = false;
+const savedRatings = await loadRatings();
 
 // innerHTML에 넣을 문자열의 특수문자를 이스케이프해 태그가 삽입되지 않게 합니다.
 const escapeHtml = (value = "") => String(value)
@@ -103,11 +105,11 @@ const renderCard = (rawGame) => {
           : `<span aria-hidden="true">${escapeHtml(game.localizedTitle.slice(0, 1))}</span>`}
       </div>
       <div class="catalog-card__copy">
-        <p>${escapeHtml(game.category || "보드게임")}</p>
         <h2 data-open-detail role="button" tabindex="0">${escapeHtml(game.localizedTitle)}<small>${escapeHtml(game.title || "")}</small></h2>
-        <dl><div><dt>인원</dt><dd>${escapeHtml(players)}</dd></div><div><dt>시간</dt><dd>${escapeHtml(playTime)}</dd></div><div><dt>난이도</dt><dd>${escapeHtml(difficulty)}</dd></div></dl>
+        ${starRatingHtml(game.id, game.localizedTitle, savedRatings.get(getDatasetItemId(game)))}
+        <p class="catalog-card__facts">${[game.category, players, playTime, difficulty].filter(Boolean).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</p>
         ${game.reason ? `<p class="catalog-card__description">${escapeHtml(game.reason)}</p>` : ""}
-        <button class="text-link catalog-save" type="button" data-game-id="${escapeHtml(game.id)}">${saved ? "저장됨" : "저장하기"}</button>
+        <button class="save-game catalog-save" type="button" data-game-id="${escapeHtml(game.id)}" aria-pressed="${saved}">${saved ? "관심 등록됨" : "관심 등록"}</button>
       </div>
     </article>`;
 };
@@ -203,9 +205,13 @@ grid.addEventListener("click", async (event) => {
   const title = card.querySelector("h2").childNodes[0].textContent.trim();
   const game = localGame ?? { id: gameId, title, localizedTitle: title };
   const result = await toggleFavorite(game);
-  button.textContent = result.saved ? "저장됨" : "저장하기";
-  showToast(result.saved ? `${title} · 저장했습니다` : `${title} · 저장을 해제했습니다`);
+  button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
+  button.setAttribute("aria-pressed", String(result.saved));
+  showToast(result.saved ? `${title} · 관심 등록했습니다` : `${title} · 관심 등록을 해제했습니다`);
 });
+
+// 별 입력은 이벤트 위임으로 처리해, 나중에 붙는 카드도 한 번만 연결합니다.
+bindStarRatings(grid, (group) => gamesById.get(Number(group.dataset.uid)), savedRatings);
 
 // 페이지에 들어오면 첫 페이지를 바로 불러옵니다.
 load({ reset: true });

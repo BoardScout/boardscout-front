@@ -3,22 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="BOARDSCOUT 내 취향과 저장한 게임" />
+    <meta name="description" content="BOARDSCOUT 내 취향과 관심 게임" />
     <title>마이페이지 — BOARDSCOUT</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body class="app-page">
     <a class="skip-link" href="#main">본문으로 바로가기</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/preferences.html">게임 추천</a><a href="/games.html">전체 게임</a><a href="/taste.html">내 취향 추천</a><a href="/mypage.html">저장한 게임</a></nav><div class="header-actions"><button class="text-button" id="logoutButton" type="button">로그아웃</button><button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button></div></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/preferences.html">게임 추천</a><a href="/games.html">전체 게임</a><a href="/taste.html">내 취향 추천</a><a href="/mypage.html">관심 게임</a></nav><div class="header-actions"><button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button></div></header>
     <main id="main" class="page-shell">
-      <p class="page-kicker">나의 게임 테이블</p>
       <h1 class="page-title"><span id="accountName">플레이어</span>님의<br /><em>다음 게임.</em></h1>
       <div class="page-grid">
-        <section class="panel"><h2 class="panel-title">저장한 게임</h2><div class="saved-list" id="savedList"></div></section>
+        <section class="panel">
+          <div class="shelf" id="favoriteShelf">
+            <button class="shelf__toggle" type="button" aria-expanded="false" aria-controls="savedList"><span class="shelf__title">관심 게임</span><span class="shelf__summary" id="favoriteSummary"></span></button>
+            <div class="saved-list" id="savedList" hidden></div>
+          </div>
+          <div class="shelf" id="ratingShelf">
+            <button class="shelf__toggle" type="button" aria-expanded="false" aria-controls="ratedList"><span class="shelf__title">별점 준 게임</span><span class="shelf__summary" id="ratingSummary"></span></button>
+            <div class="saved-list" id="ratedList" hidden></div>
+          </div>
+        </section>
         <aside class="panel panel--dark">
           <h2 class="panel-title">계정과 취향</h2>
           <div class="account-summary"><div><span>아이디</span><b id="accountId">—</b></div><div><span>내 취향</span><b id="preferenceSummary">—</b></div></div>
-          <div class="form-actions"><a class="secondary-button" style="color:inherit;border-color:currentColor" href="/#recommendWays">추천 방식 바꾸기</a></div>
         </aside>
       </div>
     </main>
