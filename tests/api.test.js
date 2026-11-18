@@ -52,10 +52,10 @@ test("추천 서버 POST는 Spring용 CSRF 토큰을 요구하지 않는다", as
     globalThis.fetch = originalFetch;
   });
 
-  await request("/api/recommend/games", { method: "POST", body: "{}" });
+  await request("/api/v1/recommendations/games", { method: "POST", body: "{}" });
 
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].path, "/api/recommend/games");
+  assert.equal(calls[0].path, "/api/v1/recommendations/games");
   assert.equal(calls[0].options.headers["X-XSRF-TOKEN"], undefined);
 });
 

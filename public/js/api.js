@@ -1,4 +1,5 @@
 const DEFAULT_HEADERS = { "Content-Type": "application/json" };
+const RECOMMENDATION_PREFIX = "/api/v1/recommendations/";
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"]);
 
 const readCookie = (name) => {
@@ -40,7 +41,8 @@ export class ApiError extends Error {
 export async function request(path, options = {}) {
   const method = (options.method ?? "GET").toUpperCase();
   const headers = { ...DEFAULT_HEADERS, ...options.headers };
-  if (path.startsWith("/api/v1/") && !SAFE_METHODS.has(method)) {
+  // 추천 서버는 CSRF 토큰을 검증하지 않으므로 core 서버(/api/v1/)로 가는 요청에만 붙입니다.
+  if (path.startsWith("/api/v1/") && !path.startsWith(RECOMMENDATION_PREFIX) && !SAFE_METHODS.has(method)) {
     // 쿠키는 브라우저가 자동 전송하지만 이 헤더는 현재 페이지의 JavaScript만 추가할 수 있습니다.
     headers["X-XSRF-TOKEN"] = await getCsrfToken();
   }
@@ -92,7 +94,7 @@ export const coreApi = {
 
 // 추천 서버는 게임 목록과 추천 결과 조회만 담당합니다.
 export const recommendationApi = {
-  health: () => request("/api/recommend/health"),
-  me: () => request("/api/recommend/me"),
-  games: (body) => request("/api/recommend/games", { method: "POST", body: JSON.stringify(body) }),
+  health: () => request("/api/v1/recommendations/health"),
+  me: () => request("/api/v1/recommendations/me"),
+  games: (body) => request("/api/v1/recommendations/games", { method: "POST", body: JSON.stringify(body) }),
 };
