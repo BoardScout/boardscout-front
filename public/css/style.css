@@ -517,3 +517,37 @@ button { color: inherit; }
 .catalog-theme .game-dialog__body dt { color: #a59e94; }
 .catalog-theme .game-dialog__body p { color: #d8d2c8; }
 
+/* Night theme for the remaining app pages */
+.night .page-kicker { color: #f09a4a; }
+.night .page-lead, .night .field-hint, .night .choice small, .night .recommendation-copy p, .night .recommendation-copy h2 small, .night .shelf__summary, .night .saved-item p, .night .saved-item h3 small, .night .match-score small, .night .star-rating, .night .taste-toolbar p { color: #b5aea4; }
+.night .page-title em { color: #f0d9bd; }
+.night .panel { border-color: rgba(236,232,223,.14); background: rgba(236,232,223,.04); }
+.night .panel--dark { border-color: rgba(240,154,74,.3); background: #15101a; box-shadow: 0 0 60px -24px rgba(240,154,74,.3); }
+.night .field input, .night .field select { border-color: rgba(236,232,223,.3); color: var(--paper); background: rgba(11,8,13,.5); }
+.night .field input:focus, .night .field select:focus { border-color: #f09a4a; box-shadow: 0 0 0 1px #f09a4a; }
+.night .choice span { border-color: rgba(236,232,223,.16); }
+.night .choice span:hover { border-color: rgba(236,232,223,.45); }
+.night .choice input:checked + span { border-color: #f09a4a; background: rgba(240,154,74,.12); }
+.night .choice input:focus-visible + span, .night .game-choice input:focus-visible + span { outline-color: #f09a4a; }
+.night .primary-button { color: #1a0d05; border-color: #f09a4a; background: #f09a4a; }
+.night .primary-button:hover { color: var(--ink); border-color: var(--paper); background: var(--paper); }
+.night .primary-button:disabled { color: #7d776f; border-color: #4a453f; background: transparent; }
+.night .text-link { color: #f09a4a; }
+.night .form-message { color: #f09a4a; }
+.night .stepper span { background: rgba(236,232,223,.18); }
+.night .stepper span.is-active { background: #f09a4a; }
+.night .recommendation-row { border-top-color: rgba(236,232,223,.14); }
+.night .recommendation-art { background-color: #17121a; box-shadow: 0 0 0 1px rgba(236,232,223,.1); }
+.night .match-score, .night .saved-item__score { color: #f09a4a; }
+.night .save-game { color: var(--paper); border-color: rgba(236,232,223,.5); }
+.night .save-game:hover, .night .save-game:focus-visible { color: var(--ink); background: var(--paper); }
+.night .save-game[aria-pressed="true"] { color: #1a0d05; border-color: #f09a4a; background: #f09a4a; }
+.night .shelf, .night .shelf:last-child { border-color: rgba(236,232,223,.14); }
+.night .shelf:last-child { border-bottom-color: rgba(236,232,223,.14); }
+.night .shelf__toggle:focus-visible { outline-color: #f09a4a; }
+.night .saved-item { border-bottom-color: rgba(236,232,223,.12); }
+.night .account-summary div { border-bottom-color: rgba(236,232,223,.14); }
+.night .account-summary span { color: #a59e94; }
+.night .taste-toolbar, .night .taste-search input { border-color: rgba(236,232,223,.25); color: var(--paper); }
+.night .auth-aside { border: 1px solid rgba(240,154,74,.3); background: #15101a; box-shadow: 0 0 60px -24px rgba(240,154,74,.3); }
+.night .toast { color: var(--ink); }
