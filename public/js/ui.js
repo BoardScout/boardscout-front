@@ -1,5 +1,8 @@
+import { getSessionUser, logoutAccount } from "./auth.js";
+
 // 모바일 메뉴 버튼의 열기·닫기 동작을 연결합니다.
 export function initChrome() {
+  initAccountAction();
   const menuButton = document.querySelector("#menuButton");
   const nav = document.querySelector(".main-nav");
   if (!menuButton || !nav) return;
@@ -50,4 +53,32 @@ export function initReveal() {
     }
   }), { threshold: 0.12 });
   document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+}
+
+// 헤더 오른쪽의 로그인·로그아웃 버튼을 세션 상태에 맞게 하나만 보여줍니다. 로그인 화면과 가입 화면에서는 로그인 버튼을 두지 않습니다.
+async function initAccountAction() {
+  const actions = document.querySelector(".header-actions");
+  if (!actions) return;
+  // 확인이 끝나기 전에 잘못된 버튼이 보이지 않도록 정적으로 적어 둔 버튼을 먼저 치웁니다.
+  actions.querySelectorAll('a[href="/login.html"], #logoutButton').forEach((node) => node.remove());
+  const user = await getSessionUser();
+  const anchor = actions.querySelector(".menu-button");
+  if (user) {
+    const button = document.createElement("button");
+    button.className = "text-button";
+    button.id = "logoutButton";
+    button.type = "button";
+    button.textContent = "로그아웃";
+    button.addEventListener("click", async () => {
+      await logoutAccount();
+      window.location.href = "/";
+    });
+    actions.insertBefore(button, anchor);
+  } else if (!["/login.html", "/register.html"].includes(window.location.pathname)) {
+    const link = document.createElement("a");
+    link.className = "text-button";
+    link.href = "/login.html";
+    link.textContent = "로그인";
+    actions.insertBefore(link, anchor);
+  }
 }

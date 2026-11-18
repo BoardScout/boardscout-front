@@ -1,7 +1,9 @@
-import { loginAccount } from "../auth.js";
+import { getSessionUser, loginAccount } from "../auth.js";
 import { initChrome } from "../ui.js";
 
 initChrome();
+// 이미 로그인한 세션이 있으면 로그인 화면을 건너뜁니다.
+if (await getSessionUser()) window.location.replace("/preferences.html");
 const form = document.querySelector("#loginForm");
 const message = document.querySelector("#formMessage");
 

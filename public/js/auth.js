@@ -36,3 +36,20 @@ export async function logoutAccount() {
   try { await coreApi.logout(); } catch { /* 서버가 응답하지 않아도 로컬 사용자 표시는 제거합니다. */ }
   localSession.clearUser();
 }
+
+// 헤더와 로그인 화면이 쓰는 세션 확인입니다. 서버가 401로 답하면 로그아웃 상태로 보고 저장된 사용자도 지웁니다.
+// 서버에 닿지 못한 경우에만 마지막으로 확인한 사용자를 씁니다.
+export async function getSessionUser() {
+  try {
+    const response = await coreApi.me();
+    const user = response.result ?? response;
+    localSession.setUser(user);
+    return user;
+  } catch (error) {
+    if (error.status === 401 || error.status === 403) {
+      localSession.clearUser();
+      return null;
+    }
+    return localSession.getUser();
+  }
+}
