@@ -41,6 +41,8 @@ const COVER_EXTENSIONS = {
   36218: "jpg",
   39856: "jpg",
   70323: "jpg",
+  84876: "jpg",
+  98778: "jpg",
   129622: "jpg",
   148228: "jpg",
   167791: "jpg",
