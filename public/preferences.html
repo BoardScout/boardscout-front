@@ -9,11 +9,10 @@
   </head>
   <body class="app-page">
     <a class="skip-link" href="#main">본문으로 바로가기</a>
-    <header class="site-header"><a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/preferences.html">게임 추천</a><a href="/games.html">전체 게임</a><a href="/taste.html">내 취향 추천</a><a href="/mypage.html">저장한 게임</a></nav><div class="header-actions"><a class="text-button" href="/taste.html">취향으로 찾기</a><button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button></div></header>
+    <header class="site-header"><a class="brand" href="/" aria-label="BOARDSCOUT 홈">BOARD<span>SCOUT</span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/preferences.html">게임 추천</a><a href="/games.html">전체 게임</a><a href="/taste.html">내 취향 추천</a><a href="/mypage.html">관심 게임</a></nav><div class="header-actions"><button class="menu-button" id="menuButton" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span></button></div></header>
     <main id="main" class="page-shell">
-      <p class="page-kicker">지금 상황으로 · 게임 정보 기반</p>
       <h1 class="page-title">지금 펼칠 게임을<br /><em>다섯 가지 선택으로.</em></h1>
-      <p class="page-lead">BGG 데이터의 인원과 시간을 먼저 확인하고, 실제 복잡도·카테고리·메커니즘이 가까운 게임을 찾습니다.</p>
+      <p class="page-lead">인원과 시간이 맞는 게임 가운데 난이도와 테마가 가까운 순서로 보여 드려요.</p>
       <form id="preferenceForm" class="page-grid">
         <div class="panel">
           <div class="field"><span>01 · 몇 명이 플레이하나요?</span><div class="choice-grid choice-grid--three">
@@ -31,9 +30,9 @@
             <label class="choice"><input type="radio" name="maxPlayTime" value="120" /><span>120분 이상<small>긴 호흡의 게임</small></span></label>
           </div></div>
           <div class="field"><span>03 · 어느 정도 복잡한 게임을 원하나요?</span><div class="choice-grid choice-grid--three">
-            <label class="choice"><input type="radio" name="difficulty" value="1" required /><span>가볍게<small>BGG 1.0–1.8</small></span></label>
-            <label class="choice"><input type="radio" name="difficulty" value="2" /><span>적당히<small>BGG 1.8–2.8</small></span></label>
-            <label class="choice"><input type="radio" name="difficulty" value="3" /><span>깊게<small>BGG 2.8 이상</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="1" required /><span>가볍게<small>규칙이 쉬운 편</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="2" /><span>적당히<small>몇 판이면 익숙해져요</small></span></label>
+            <label class="choice"><input type="radio" name="difficulty" value="3" /><span>깊게<small>익히는 데 시간이 걸려요</small></span></label>
           </div></div>
         </div>
         <div class="panel">

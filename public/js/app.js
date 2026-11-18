@@ -32,9 +32,9 @@ document.querySelectorAll(".product-card .quick-add").forEach((button) => {
     const game = GAMES.find(({ id }) => id === Number(button.dataset.gameId));
     if (!game) return;
     const { saved, favorites } = await toggleFavorite(game);
-    button.firstChild.textContent = saved ? "저장됨 " : "저장하기 ";
+    button.firstChild.textContent = saved ? "관심 등록됨 " : "관심 등록 ";
     if (bagCount) bagCount.textContent = String(favorites.length);
-    showToast(saved ? `${game.title} · 저장했습니다` : `${game.title} · 저장을 해제했습니다`);
+    showToast(saved ? `${game.title} · 관심 등록했습니다` : `${game.title} · 관심 등록을 해제했습니다`);
   });
 });
 
