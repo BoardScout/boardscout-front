@@ -592,3 +592,23 @@ body.night:not(.app-page) .quick-add:focus-visible, body.night:not(.app-page) .f
 .night .secondary-button.detail-open { color: var(--paper); border-color: rgba(236,232,223,.5); }
 @media (max-width: 600px) { .recommendation-side .detail-open { flex: 1; min-width: 0; min-height: 48px; } }
 
+/* 추천 목록의 두 버튼: 상세 보기는 조용한 선, 관심 등록은 호박빛 주 버튼 */
+.night .recommendation-side .detail-open, .night .recommendation-side .save-game { position: relative; width: 156px; min-width: 0; min-height: 48px; padding: 0 22px; border-radius: 0; font-size: 15px; font-weight: 500; letter-spacing: 0; outline: 1px solid transparent; outline-offset: 4px; transition: color .25s, background .25s, border-color .25s, outline-color .25s, box-shadow .25s; }
+.night .recommendation-side .detail-open { color: var(--paper); border: 1px solid rgba(236,232,223,.28); background: transparent; }
+.night .recommendation-side .detail-open:hover, .night .recommendation-side .detail-open:focus-visible { color: #f09a4a; border-color: #f09a4a; background: transparent; outline-color: rgba(240,154,74,.35); }
+.night .recommendation-side .save-game { color: #f6c590; border: 1px solid rgba(240,154,74,.6); background: rgba(240,154,74,.1); }
+.night .recommendation-side .save-game:hover, .night .recommendation-side .save-game:focus-visible { color: #1a0d05; border-color: #f09a4a; background: #f09a4a; outline-color: rgba(240,154,74,.35); }
+.night .recommendation-side .save-game[aria-pressed="true"] { display: inline-flex; align-items: center; justify-content: center; gap: 10px; color: #f6c590; border-color: #f09a4a; background: rgba(240,154,74,.16); box-shadow: 0 0 28px -8px rgba(240,154,74,.55); }
+.night .recommendation-side .save-game[aria-pressed="true"]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #f09a4a; box-shadow: 0 0 8px 2px rgba(240,154,74,.7); }
+.night .recommendation-side .save-game[aria-pressed="true"]:hover, .night .recommendation-side .save-game[aria-pressed="true"]:focus-visible { color: #1a0d05; background: #f09a4a; }
+.night .recommendation-side .save-game[aria-pressed="true"]:hover::before, .night .recommendation-side .save-game[aria-pressed="true"]:focus-visible::before { background: #1a0d05; box-shadow: none; }
+@media (max-width: 600px) { .night .recommendation-side .detail-open, .night .recommendation-side .save-game { flex: 1; width: auto; } }
+
+/* 전체 게임 카드의 관심 등록: 추천 목록 버튼과 같은 호박빛 언어, 표지 위에 얹히므로 작게 */
+.night .catalog-card .catalog-save { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 13px; border-radius: 0; color: #f6c590; border: 1px solid rgba(240,154,74,.6); background: rgba(11,8,13,.86); backdrop-filter: blur(4px); font-size: var(--fs-caption); font-weight: 500; letter-spacing: 0; transition: opacity .18s, color .25s, background .25s, border-color .25s, box-shadow .25s; }
+.night .catalog-card .catalog-save:hover, .night .catalog-card .catalog-save:focus-visible { color: #1a0d05; border-color: #f09a4a; background: #f09a4a; }
+.night .catalog-card .catalog-save[aria-pressed="true"] { color: #f6c590; border-color: #f09a4a; background: rgba(11,8,13,.86); box-shadow: 0 0 24px -6px rgba(240,154,74,.6); }
+.night .catalog-card .catalog-save[aria-pressed="true"]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #f09a4a; box-shadow: 0 0 8px 2px rgba(240,154,74,.7); }
+.night .catalog-card .catalog-save[aria-pressed="true"]:hover, .night .catalog-card .catalog-save[aria-pressed="true"]:focus-visible { color: #1a0d05; background: #f09a4a; }
+.night .catalog-card .catalog-save[aria-pressed="true"]:hover::before, .night .catalog-card .catalog-save[aria-pressed="true"]:focus-visible::before { background: #1a0d05; box-shadow: none; }
+
