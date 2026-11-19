@@ -638,3 +638,19 @@ body.night:not(.app-page) .quick-add:focus-visible, body.night:not(.app-page) .f
 .login-prompt__go { padding: 12px 20px; color: var(--paper); background: var(--ink); font-size: 14px; }
 .login-prompt__go:hover { background: #f09a4a; color: var(--ink); }
 .login-prompt__close { padding: 12px 8px; border: 0; color: inherit; background: none; font: inherit; cursor: pointer; text-decoration: underline; }
+
+/* 게임 소개 페이지(game.html)에도 다른 화면과 같은 밤 테마를 적용합니다. */
+.night .game-detail { color: var(--paper); background: transparent; }
+.night .game-detail__cover { background: #1a1612; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+.night .game-detail__eyebrow, .night .game-detail__facts dt { color: #b5aea4; }
+.night .game-detail__original { color: #f09a4a; }
+.night .game-detail__facts { border-color: rgba(236,232,223,.18); }
+.night .game-detail__section { border-color: rgba(236,232,223,.14); }
+.night .game-detail__section p, .night .game-detail__source { color: #b5aea4; }
+.night .game-detail__back:hover, .night .game-detail__source:hover { color: #f09a4a; }
+
+/* 모바일 상세 창에서 표지 이미지가 행 높이를 넘어 제목을 가리지 않도록 행 높이를 내용에 맞춥니다. */
+@media (max-width: 720px) {
+  .game-dialog[open] { grid-auto-rows: max-content; }
+  .night .game-dialog__image img { height: auto; }
+}
