@@ -2,8 +2,11 @@ import { getSessionUser, loginAccount } from "../auth.js";
 import { initChrome } from "../ui.js";
 
 initChrome();
+// 로그인 안내 팝업에서 넘어온 경우 로그인 뒤 돌아갈 같은 사이트 안의 주소만 허용합니다.
+const requestedNext = new URLSearchParams(window.location.search).get("next");
+const nextUrl = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/preferences.html";
 // 이미 로그인한 세션이 있으면 로그인 화면을 건너뜁니다.
-if (await getSessionUser()) window.location.replace("/preferences.html");
+if (await getSessionUser()) window.location.replace(nextUrl);
 const form = document.querySelector("#loginForm");
 const message = document.querySelector("#formMessage");
 
@@ -22,7 +25,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const data = Object.fromEntries(new FormData(form));
     await loginAccount(data);
-    window.location.href = "/preferences.html";
+    window.location.href = nextUrl;
   } catch (error) {
     message.textContent = error.message;
   } finally {

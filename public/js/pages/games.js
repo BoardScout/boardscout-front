@@ -1,6 +1,6 @@
 import { coreApi } from "../api.js";
 import { GAMES, getDifficultyLabel, getLocalFavorites, getPlayerLabel, toggleFavorite } from "../recommendations.js";
-import { initChrome, showToast } from "../ui.js";
+import { initChrome, requireLogin, showToast } from "../ui.js";
 import { bindStarRatings, getDatasetItemId, loadRatings, starRatingHtml } from "../star-rating.js";
 import { getKoGame, getGameImage } from "../game-catalog-ko.js";
 import { escapeHtml, openGameDetail, safeImageUrl } from "../game-detail.js";
@@ -171,6 +171,7 @@ loadMore.addEventListener("click", () => load());
 grid.addEventListener("click", async (event) => {
   const button = event.target.closest(".catalog-save");
   if (!button) return;
+  if (!(await requireLogin("관심 게임으로 등록하려면 로그인해 주세요."))) return;
   const card = button.closest(".catalog-card");
   const gameId = Number(button.dataset.gameId);
   const localGame = GAMES.find((game) => game.id === gameId);

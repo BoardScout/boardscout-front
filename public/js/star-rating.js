@@ -1,5 +1,5 @@
 import { coreApi } from "./api.js";
-import { showToast } from "./ui.js";
+import { requireLogin, showLoginPrompt, showToast } from "./ui.js";
 
 const CACHE_KEY = "boardscout.ratedGames";
 
@@ -62,6 +62,12 @@ export function bindStarRatings(container, getGame, savedRatings) {
   container.addEventListener("change", async (event) => {
     const group = event.target.closest(".star-rating");
     if (!group) return;
+    // 비로그인이면 선택한 별을 되돌리고 로그인 안내 팝업을 띄웁니다.
+    if (!(await requireLogin("별점을 남기려면 로그인해 주세요."))) {
+      event.target.checked = false;
+      showChecked(group);
+      return;
+    }
     const game = getGame(group);
     const id = getDatasetItemId(game);
     const rating = Number(event.target.value);
@@ -73,7 +79,9 @@ export function bindStarRatings(container, getGame, savedRatings) {
       rememberRatedGame(game, rating);
       showToast(`${name} · ${rating}점 저장됨`);
     } catch (error) {
-      showToast(error.status === 401 ? "별점을 저장하려면 로그인해 주세요" : "별점을 저장하지 못했습니다");
+      // 세션이 만료돼 서버가 401을 돌려준 경우에도 같은 로그인 안내를 보여줍니다.
+      if (error.status === 401) showLoginPrompt("별점을 남기려면 로그인해 주세요.");
+      else showToast("별점을 저장하지 못했습니다");
     } finally {
       group.disabled = false;
     }

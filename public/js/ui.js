@@ -38,6 +38,42 @@ export function showToast(message) {
   showToast.timer = window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
 }
 
+// 페이지가 열려 있는 동안 로그인 여부를 한 번만 확인해 재사용합니다. 로그인하면 페이지가 이동하므로 다시 확인할 필요가 없습니다.
+let sessionCheck;
+const checkSession = () => (sessionCheck ??= getSessionUser());
+
+// 로그인 안내 팝업입니다. 로그인 화면으로 이동하는 버튼과 닫기 버튼을 보여줍니다.
+let loginDialog;
+export function showLoginPrompt(message = "이 기능을 사용하려면 로그인해 주세요.") {
+  if (!loginDialog) {
+    loginDialog = document.createElement("dialog");
+    loginDialog.className = "login-prompt";
+    loginDialog.setAttribute("aria-labelledby", "loginPromptTitle");
+    loginDialog.innerHTML = `
+      <h2 id="loginPromptTitle">로그인이 필요해요</h2>
+      <p class="login-prompt__text"></p>
+      <div class="login-prompt__actions">
+        <a class="login-prompt__go" href="/login.html">로그인하러 가기</a>
+        <button class="login-prompt__close" type="button" data-close>닫기</button>
+      </div>`;
+    loginDialog.addEventListener("click", (event) => {
+      if (event.target === loginDialog || event.target.closest("[data-close]")) loginDialog.close();
+    });
+    document.body.append(loginDialog);
+  }
+  loginDialog.querySelector(".login-prompt__text").textContent = message;
+  // 로그인을 마치면 지금 보던 화면으로 돌아오도록 현재 주소를 넘깁니다.
+  loginDialog.querySelector(".login-prompt__go").href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+  if (!loginDialog.open) loginDialog.showModal();
+}
+
+// 로그인한 사용자만 통과시킵니다. 비로그인이면 안내 팝업을 띄우고 false를 반환합니다.
+export async function requireLogin(message) {
+  if (await checkSession()) return true;
+  showLoginPrompt(message);
+  return false;
+}
+
 // .reveal 요소가 화면에 들어올 때 나타나는 효과를 적용합니다.
 export function initReveal() {
   // IntersectionObserver 미지원 환경에서는 콘텐츠를 숨기지 않고 즉시 표시합니다.

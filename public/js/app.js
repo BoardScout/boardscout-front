@@ -1,5 +1,5 @@
 import { GAMES, getLocalFavorites, toggleFavorite } from "./recommendations.js";
-import { initChrome, initReveal, showToast } from "./ui.js";
+import { initChrome, initReveal, requireLogin, showToast } from "./ui.js";
 
 initChrome();
 initReveal();
@@ -29,6 +29,7 @@ document.querySelectorAll(".filter").forEach((button) => {
 // 카드의 저장 버튼으로 저장 여부를 바꾸고, 버튼 문구와 저장 개수를 갱신합니다.
 document.querySelectorAll(".product-card .quick-add").forEach((button) => {
   button.addEventListener("click", async () => {
+    if (!(await requireLogin("관심 게임으로 등록하려면 로그인해 주세요."))) return;
     const game = GAMES.find(({ id }) => id === Number(button.dataset.gameId));
     if (!game) return;
     const { saved, favorites } = await toggleFavorite(game);

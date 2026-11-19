@@ -1,6 +1,6 @@
 import { getDifficultyLabel, getPlayerLabel, getRecommendations, getTasteRecommendations, toggleFavorite } from "../recommendations.js?v=20261119-1";
 import { bindStarRatings, getDatasetItemId, loadRatings, starRatingHtml } from "../star-rating.js";
-import { initChrome, showToast } from "../ui.js";
+import { initChrome, requireLogin, showToast } from "../ui.js";
 import { openGameDetail } from "../game-detail.js";
 
 initChrome();
@@ -57,6 +57,7 @@ list.querySelectorAll(".detail-open").forEach((button) => {
 
 list.querySelectorAll(".save-game").forEach((button) => {
   button.addEventListener("click", async () => {
+    if (!(await requireLogin("관심 게임으로 등록하려면 로그인해 주세요."))) return;
     const game = games[Number(button.dataset.index)];
     const result = await toggleFavorite(game);
     button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
