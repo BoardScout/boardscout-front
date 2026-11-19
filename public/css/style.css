@@ -583,3 +583,7 @@ body.night:not(.app-page) .objects__footer a { color: #f09a4a; }
 body.night:not(.app-page) .footer { background: #08060a; }
 body.night:not(.app-page) .footer > div:first-child p, body.night:not(.app-page) .footer__copy { color: #8f887f; }
 body.night:not(.app-page) .quick-add:focus-visible, body.night:not(.app-page) .filter:focus-visible { outline-color: #f09a4a; }
+
+/* 취향 추천 안내문은 길어서 링크만 홀로 줄바꿈되지 않게 폭을 넓히고 링크는 한 덩어리로 묶습니다. */
+[data-mode="taste"] .page-lead { max-width: 960px; text-wrap: wrap; }
+.page-lead .text-link { white-space: nowrap; }
