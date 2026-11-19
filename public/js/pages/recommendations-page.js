@@ -1,6 +1,7 @@
 import { getDifficultyLabel, getPlayerLabel, getRecommendations, getTasteRecommendations, toggleFavorite } from "../recommendations.js?v=20261119-1";
 import { bindStarRatings, getDatasetItemId, loadRatings, starRatingHtml } from "../star-rating.js";
 import { initChrome, showToast } from "../ui.js";
+import { openGameDetail } from "../game-detail.js";
 
 initChrome();
 const list = document.querySelector("#recommendationList");
@@ -38,6 +39,7 @@ list.innerHTML = games.length ? games.slice(0, visible).map((game, index) => `
     </div>
     <div class="recommendation-side">
       <div class="match-score">${game.score ?? 86}<small>일치도</small></div>
+      <button class="secondary-button detail-open" type="button" data-index="${index}" aria-label="${game.localizedTitle ?? game.title} 상세 보기">상세 보기</button>
       <button class="save-game" type="button" data-index="${index}" aria-pressed="false">관심 등록</button>
     </div>
   </article>
@@ -48,6 +50,10 @@ bindRows();
 
 // 새로 그린 목록의 저장 버튼과 별점 폼에 이벤트를 연결합니다.
 function bindRows() {
+
+list.querySelectorAll(".detail-open").forEach((button) => {
+  button.addEventListener("click", () => openGameDetail(games[Number(button.dataset.index)]));
+});
 
 list.querySelectorAll(".save-game").forEach((button) => {
   button.addEventListener("click", async () => {

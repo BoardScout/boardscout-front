@@ -508,14 +508,14 @@ button { color: inherit; }
 .night .secondary-button:hover { color: var(--ink); background: var(--paper); }
 .night .empty-state { color: #b5aea4; border-color: rgba(236,232,223,.18); }
 .night .text-link { color: #f09a4a; }
-.catalog-theme .game-dialog { color: var(--paper); background: #15101a; box-shadow: 0 0 0 1px rgba(240,154,74,.35), 0 30px 90px rgba(0,0,0,.6), 0 0 80px -20px rgba(240,154,74,.3); }
-.catalog-theme .game-dialog::backdrop { background: rgba(5,3,7,.84); backdrop-filter: blur(3px); }
-.catalog-theme .game-dialog__image { background: #0e0a10; }
-.catalog-theme .game-dialog__close { color: var(--paper); }
-.catalog-theme .game-dialog__eyebrow, .catalog-theme .game-dialog__original { color: #f09a4a; }
-.catalog-theme .game-dialog__body dl { border-color: rgba(236,232,223,.16); }
-.catalog-theme .game-dialog__body dt { color: #a59e94; }
-.catalog-theme .game-dialog__body p { color: #d8d2c8; }
+.night .game-dialog { color: var(--paper); background: #15101a; box-shadow: 0 0 0 1px rgba(240,154,74,.35), 0 30px 90px rgba(0,0,0,.6), 0 0 80px -20px rgba(240,154,74,.3); }
+.night .game-dialog::backdrop { background: rgba(5,3,7,.84); backdrop-filter: blur(3px); }
+.night .game-dialog__image { background: #0e0a10; }
+.night .game-dialog__close { color: var(--paper); }
+.night .game-dialog__eyebrow, .night .game-dialog__original { color: #f09a4a; }
+.night .game-dialog__body dl { border-color: rgba(236,232,223,.16); }
+.night .game-dialog__body dt { color: #a59e94; }
+.night .game-dialog__body p { color: #d8d2c8; }
 
 /* Night theme for the remaining app pages */
 .night .page-kicker { color: #f09a4a; }
@@ -587,3 +587,8 @@ body.night:not(.app-page) .quick-add:focus-visible, body.night:not(.app-page) .f
 /* 취향 추천 안내문은 길어서 링크만 홀로 줄바꿈되지 않게 폭을 넓히고 링크는 한 덩어리로 묶습니다. */
 [data-mode="taste"] .page-lead { max-width: 960px; text-wrap: wrap; }
 .page-lead .text-link { white-space: nowrap; }
+
+.recommendation-side .detail-open { min-width: 148px; min-height: 52px; font-size: 16px; }
+.night .secondary-button.detail-open { color: var(--paper); border-color: rgba(236,232,223,.5); }
+@media (max-width: 600px) { .recommendation-side .detail-open { flex: 1; min-width: 0; min-height: 48px; } }
+
