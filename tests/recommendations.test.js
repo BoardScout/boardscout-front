@@ -35,11 +35,11 @@ test("상황 추천은 난이도와 테마 및 플레이 방식이 가까운 게
   assert.ok(games[0].score > games.at(-1).score);
 });
 
-test("취향 추천은 선택한 게임을 제외하고 유사한 게임을 추천한다", () => {
-  const games = scoreTasteGames({ recommendationMode: "taste", likedGameIds: [11, 15, 21] });
+test("취향 추천 폴백은 평점이 높은 게임부터 정렬한다", () => {
+  const games = scoreTasteGames({ recommendationMode: "taste" });
 
-  assert.equal(games.some(({ id }) => [11, 15, 21].includes(id)), false);
-  assert.ok(["7 Wonders Duel", "Carcassonne"].includes(games[0].title));
+  assert.ok(games.length > 0);
+  assert.ok(games.every((game, index) => index === 0 || games[index - 1].averageRating >= game.averageRating));
 });
 
 test("이전 로컬 DTO도 새 상황 추천 계약으로 변환한다", () => {
@@ -71,7 +71,7 @@ test("상황 추천 요청에는 취향 추천 전용 likedGameIds를 포함하�
   });
 });
 
-test("취향 추천 요청에는 상황 추천 전용 조건을 포함하지 않는다", () => {
+test("취향 추천 요청에는 모드만 담고 선택 조건과 likedGameIds는 보내지 않는다", () => {
   const request = toRecommendationRequest({
     recommendationMode: "taste",
     playerCount: 2,
@@ -82,8 +82,5 @@ test("취향 추천 요청에는 상황 추천 전용 조건을 포함하지 않
     likedGameIds: [7, 15, 21],
   });
 
-  assert.deepEqual(request, {
-    recommendationMode: "taste",
-    likedGameIds: [7, 15, 21],
-  });
+  assert.deepEqual(request, { recommendationMode: "taste" });
 });
