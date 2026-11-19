@@ -612,3 +612,18 @@ body.night:not(.app-page) .quick-add:focus-visible, body.night:not(.app-page) .f
 .night .catalog-card .catalog-save[aria-pressed="true"]:hover, .night .catalog-card .catalog-save[aria-pressed="true"]:focus-visible { color: #1a0d05; background: #f09a4a; }
 .night .catalog-card .catalog-save[aria-pressed="true"]:hover::before, .night .catalog-card .catalog-save[aria-pressed="true"]:focus-visible::before { background: #1a0d05; box-shadow: none; }
 
+/* 상세 창: 표지에 조명을 비추고, 분류는 태그로, 요약은 호박색 세로선으로 구분 */
+.night .game-dialog { scrollbar-width: thin; scrollbar-color: rgba(240,154,74,.4) transparent; }
+.night .game-dialog__image { padding: 36px; background: radial-gradient(circle at 50% 38%, rgba(240,154,74,.2), rgba(14,10,16,0) 62%), #0e0a10; border-right: 1px solid rgba(236,232,223,.1); }
+.night .game-dialog__image img { max-height: 520px; filter: drop-shadow(0 18px 36px rgba(0,0,0,.55)); }
+.night .game-dialog__close { top: 14px; right: 14px; width: 40px; height: 40px; border: 1px solid rgba(236,232,223,.28); color: var(--paper); font-size: 22px; transition: color .25s, border-color .25s; }
+.night .game-dialog__close:hover, .night .game-dialog__close:focus-visible { color: #f09a4a; border-color: #f09a4a; }
+.night .game-dialog__body { padding: 52px 40px 40px; }
+.night .game-dialog__eyebrow { display: inline-block; margin: 0 0 14px; padding: 3px 10px; border: 1px solid rgba(240,154,74,.5); color: #f6c590; font-size: var(--fs-caption); font-weight: 500; }
+.night .game-dialog__body h2 { font-size: 36px; }
+.night .game-dialog__original { color: #c79a6a; }
+.night .game-dialog__body dl { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 16px; padding: 18px 0; }
+.night .game-dialog__body dd { color: var(--paper); }
+.night .game-dialog__lead { padding-left: 16px; border-left: 2px solid rgba(240,154,74,.6); color: #e6dfd3; }
+.night .game-dialog__body h3 { color: #f6c590; font-size: var(--fs-body); }
+@media (max-width: 720px) { .night .game-dialog__image { padding: 28px; border-right: 0; border-bottom: 1px solid rgba(236,232,223,.1); } .night .game-dialog__image img { max-height: 300px; } .night .game-dialog__body { padding: 28px 20px; } .night .game-dialog__body dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
