@@ -167,6 +167,8 @@ export async function getPreferences() {
 
 // 게임을 저장 목록에 넣거나 뺍니다. 저장 여부와 갱신된 목록을 반환합니다.
 export async function toggleFavorite(game) {
+  // API 추천 결과는 id 대신 gameId를 주므로 저장 목록의 키를 하나로 맞춥니다.
+  if (game.id == null && game.gameId != null) game = { ...game, id: game.gameId };
   const current = localSession.getFavorites();
   const exists = current.some((item) => item.id === game.id);
   const next = exists ? current.filter((item) => item.id !== game.id) : [...current, game];
