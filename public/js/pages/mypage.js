@@ -9,8 +9,8 @@ initChrome();
 const user = await getCurrentUser();
 const preferences = await getPreferences();
 // 로그인 여부와 관계없이 확인 가능한 정보로 계정 요약을 구성합니다.
-document.querySelector("#accountName").textContent = user?.name || user?.username || "게스트 플레이어";
-document.querySelector("#accountId").textContent = user?.username || "로그인 전";
+document.querySelector("#accountName").textContent = user?.nickname || user?.name || "게스트 플레이어";
+document.querySelector("#accountId").textContent = user?.email || "로그인 전";
 document.querySelector("#preferenceSummary").textContent = preferences
   ? preferences.recommendationMode === "taste"
     ? "내 별점 기반 추천"

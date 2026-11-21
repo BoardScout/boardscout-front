@@ -21,7 +21,8 @@ export async function loginAccount(payload) {
 export async function getCurrentUser() {
   try {
     // 브라우저가 BGSESSION 쿠키를 함께 보내면 서버가 Redis 세션으로 현재 사용자를 복원합니다.
-    const user = await coreApi.me();
+    const response = await coreApi.me();
+    const user = response.result ?? response;
     localSession.setUser(user);
     return user;
   } catch {
