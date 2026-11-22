@@ -44,7 +44,8 @@ export const GAMES = [
 ];
 
 // 화면의 3단계 난이도를 BGG complexity 점수의 중심값으로 바꾸는 표입니다.
-const difficultyCenter = { 1: 1.5, 2: 2.3, 3: 3.5 };
+// FastAPI의 DIFFICULTY_CENTERS(app/recommender.py)와 같은 값을 씁니다.
+const difficultyCenter = { 1: 1.5, 2: 2.5, 3: 3.7 };
 
 // 최소·최대 인원이 같으면 한 값만, 다르면 범위로 표시합니다.
 export const getPlayerLabel = (game) => game.minPlayers === game.maxPlayers
@@ -103,7 +104,7 @@ export function scoreContextGames(preferences = {}) {
     return playerMatch && timeMatch;
   }).map((game) => {
     // 난이도·테마·플레이 방식·평점은 후보 안에서의 정렬 신호로만 사용합니다.
-    const targetComplexity = difficultyCenter[preference.difficulty] ?? 2.3;
+    const targetComplexity = difficultyCenter[preference.difficulty] ?? difficultyCenter[2];
     const complexityScore = Math.max(0, 20 - Math.abs(game.complexity - targetComplexity) * 12);
     const themeScore = Math.min(overlapCount(preference.themes, game.themes) * 12, 24);
     const styleScore = Math.min(overlapCount(preference.playStyles, game.playStyles) * 10, 20);
