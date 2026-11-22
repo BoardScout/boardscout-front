@@ -68,7 +68,6 @@ export async function request(path, options = {}) {
 
 // 페이지 코드가 엔드포인트 문자열을 직접 조합하지 않도록 API 경계를 한곳에 모읍니다.
 export const coreApi = {
-  // core 서버 상태를 확인합니다.
   health: () => request("/api/v1/health"),
   // 이름으로 보드게임을 검색해 페이지 단위로 가져옵니다.
   searchBoardGames: (query, page = 0, size = 20) => {
@@ -81,41 +80,32 @@ export const coreApi = {
     if (cursor !== null) params.set("cursor", String(cursor));
     return request(`/api/v1/board-games/cursor?${params}`);
   },
-  // 이메일 회원가입을 요청합니다.
   register: (body) => request("/api/v1/auth/register", { method: "POST", body: JSON.stringify(body) }),
-  // 로그인을 요청합니다. 성공하면 서버가 세션 쿠키를 내려 줍니다.
+  // 성공하면 서버가 HttpOnly BGSESSION 쿠키를 내려 줍니다.
   login: (body) => request("/api/v1/auth/login", { method: "POST", body: JSON.stringify(body) }),
-  // 로그아웃을 요청해 서버 세션을 삭제합니다.
   logout: () => request("/api/v1/auth/logout", { method: "POST" }),
-  // 현재 로그인한 회원 정보를 조회합니다.
   me: () => request("/api/v1/users/me"),
-  // 저장된 추천 취향을 조회합니다.
   preferences: () => request("/api/v1/users/me/preferences"),
-  // 추천 취향을 저장합니다.
   savePreferences: (body) => request("/api/v1/users/me/preferences", { method: "PUT", body: JSON.stringify(body) }),
-  // 내가 남긴 별점 목록을 조회합니다.
   ratings: () => request("/api/v1/users/me/ratings"),
-  // 데이터셋 게임 하나에 별점을 등록하거나 수정합니다.
+  // 별점 API는 board_games.id가 아니라 데이터셋 ID(datasetItemId)를 씁니다.
   saveRating: (datasetItemId, rating) => request(`/api/v1/users/me/ratings/${datasetItemId}`, {
     method: "PUT",
     body: JSON.stringify({ rating }),
   }),
-  // 데이터셋 게임 하나의 별점을 삭제합니다.
   removeRating: (datasetItemId) => request(`/api/v1/users/me/ratings/${datasetItemId}`, { method: "DELETE" }),
-  // 저장한 게임 목록을 조회합니다.
+  // favorites 세 API는 Spring에 아직 없어 404를 받습니다. 호출하는 쪽이 실패를 무시하고
+  // localStorage 관심 목록을 씁니다(recommendations.js의 toggleFavorite).
   favorites: () => request("/api/v1/users/me/favorites"),
-  // 게임을 저장 목록에 추가합니다.
   addFavorite: (gameId) => request(`/api/v1/users/me/favorites/${gameId}`, { method: "POST" }),
-  // 게임을 저장 목록에서 제거합니다.
   removeFavorite: (gameId) => request(`/api/v1/users/me/favorites/${gameId}`, { method: "DELETE" }),
 };
 
-// 추천 서버는 게임 목록과 추천 결과 조회만 담당합니다.
+// FastAPI 추천 서버입니다. Nginx가 /api/v1/recommendations/ 경로만 이쪽으로 보냅니다.
 export const recommendationApi = {
-  // 추천 서버 상태를 확인합니다.
   health: () => request("/api/v1/recommendations/health"),
   // 추천 서버가 인식한 현재 로그인 사용자를 확인합니다.
   me: () => request("/api/v1/recommendations/me"),
-  // 선호 조건으로 추천 게임 목록을 요청합니다. limit으로 가져올 개수를 정합니다.
+  // 응답 항목의 gameId는 데이터셋 ID입니다. 화면에서는 toViewGame()으로 변환해 씁니다.
   games: (body, limit = 12) => request(`/api/v1/recommendations/games?limit=${limit}`, { method: "POST", body: JSON.stringify(body) }),
 };

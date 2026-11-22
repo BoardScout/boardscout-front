@@ -9,23 +9,16 @@ const read = (key, fallback) => {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
   catch { return fallback; }
 };
-// 값을 JSON 문자열로 바꿔 localStorage에 저장합니다.
 const write = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 
-// 백엔드가 준비되지 않은 환경에서도 인증·취향·저장 흐름을 체험할 수 있는 로컬 저장소입니다.
+// 브라우저 저장소입니다. 사용자와 취향은 서버에 닿지 못할 때 쓰는 캐시이고,
+// 관심 목록(favorites)은 서버 API가 없어 이곳이 유일한 저장 위치입니다.
 export const localSession = {
-  // 로그인한 사용자 정보를 읽습니다. 없으면 null입니다.
   getUser: () => read(KEYS.user, null),
-  // 로그인한 사용자 정보를 저장합니다.
   setUser: (user) => write(KEYS.user, user),
-  // 저장된 사용자 정보를 지웁니다.
   clearUser: () => localStorage.removeItem(KEYS.user),
-  // 저장된 추천 취향을 읽습니다. 없으면 null입니다.
   getPreferences: () => read(KEYS.preferences, null),
-  // 추천 취향을 저장합니다.
   setPreferences: (preferences) => write(KEYS.preferences, preferences),
-  // 저장한 게임 목록을 읽습니다. 없으면 빈 배열입니다.
   getFavorites: () => read(KEYS.favorites, []),
-  // 저장한 게임 목록을 덮어씁니다.
   setFavorites: (favorites) => write(KEYS.favorites, favorites),
 };
