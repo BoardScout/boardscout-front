@@ -1,10 +1,8 @@
 import { coreApi } from "./api.js";
 import { requireLogin, showLoginPrompt, showToast } from "./ui.js";
+import { getDatasetItemId } from "./game-model.js";
 
 const CACHE_KEY = "boardscout.ratedGames";
-
-// 별점 API가 쓰는 데이터셋 ID를 게임 객체에서 꺼냅니다. 추천 결과·카탈로그·내장 목록의 필드 이름을 모두 받습니다.
-export const getDatasetItemId = (game) => Number(game.datasetItemId ?? game.gameId ?? game.id);
 
 // 서버가 별점 목록에 게임 이름을 주지 않으므로, 별점을 줄 때 이름을 브라우저에 기억해 마이페이지에서 씁니다.
 export const readRatedGameCache = () => {

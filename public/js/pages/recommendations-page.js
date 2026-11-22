@@ -1,5 +1,6 @@
 import { getDifficultyLabel, getPlayerLabel, getRecommendations, getTasteRecommendations, toggleFavorite } from "../recommendations.js?v=20261119-1";
-import { bindStarRatings, getDatasetItemId, loadRatings, starRatingHtml } from "../star-rating.js";
+import { bindStarRatings, loadRatings, starRatingHtml } from "../star-rating.js";
+import { displayTitle, toViewGame } from "../game-model.js";
 import { initChrome, requireLogin, showToast } from "../ui.js";
 import { openGameDetail } from "../game-detail.js";
 
@@ -11,13 +12,13 @@ let games;
 let tasteInfo = null;
 if (isTaste) {
   tasteInfo = await getTasteRecommendations();
-  games = tasteInfo.items;
+  games = tasteInfo.items.map(toViewGame);
   const lead = document.querySelector("#resultLead");
   lead.innerHTML = tasteInfo.personalized
     ? `별점 ${tasteInfo.ratingCount}개를 반영했어요. 이미 평가한 게임은 빼고, 취향이 가까운 순서로 보여 드려요.`
     : `별점을 ${tasteInfo.minRatingsRequired}개 이상 남기면 내 취향 추천이 시작돼요(현재 ${tasteInfo.ratingCount}개). 그때까지 평점 높은 인기 게임을 보여 드려요. <a class="text-link" href="/games.html">별점 남기러 가기</a>`;
 } else {
-  games = await getRecommendations();
+  games = (await getRecommendations()).map(toViewGame);
 }
 
 const savedRatings = await loadRatings();
@@ -32,14 +33,14 @@ list.innerHTML = games.length ? games.slice(0, visible).map((game, index) => `
     <div class="recommendation-art" aria-hidden="true"></div>
     <div class="recommendation-copy">
       <p class="page-kicker">${index + 1}위 · ${game.category}</p>
-      <h2>${game.localizedTitle ?? game.title}<small>${game.localizedTitle ? game.title : ""}</small></h2>
+      <h2>${displayTitle(game)}<small>${game.localizedTitle ? game.title : ""}</small></h2>
       <p>${getPlayerLabel(game)} · 약 ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.3)}</p>
       <p>${game.reason ?? "당신의 플레이 조건과 잘 맞는 게임입니다."}</p>
-      ${isTaste ? "" : starRatingHtml(index, game.localizedTitle ?? game.title, savedRatings.get(getDatasetItemId(game)))}
+      ${isTaste ? "" : starRatingHtml(index, displayTitle(game), savedRatings.get(game.datasetItemId))}
     </div>
     <div class="recommendation-side">
       <div class="match-score">${game.score ?? 86}<small>일치도</small></div>
-      <button class="secondary-button detail-open" type="button" data-index="${index}" aria-label="${game.localizedTitle ?? game.title} 상세 보기">상세 보기</button>
+      <button class="secondary-button detail-open" type="button" data-index="${index}" aria-label="${displayTitle(game)} 상세 보기">상세 보기</button>
       <button class="save-game" type="button" data-index="${index}" aria-pressed="false">관심 등록</button>
     </div>
   </article>

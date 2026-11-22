@@ -6,6 +6,6 @@
   "description": "BOARDSCOUT board game recommendation frontend",
   "scripts": {
     "serve": "python3 -m http.server 4173 --directory public",
-    "check": "node --check public/js/app.js && node --check public/js/api.js && node --check public/js/auth.js && node --check public/js/recommendations.js && node --check public/js/storage.js && node --check public/js/ui.js && node --check public/js/pages/login.js && node --check public/js/pages/register.js && node --check public/js/pages/preferences.js && node --check public/js/pages/recommendations-page.js && node --check public/js/pages/mypage.js && node --check public/js/pages/game-detail.js && node --check public/js/pages/games.js && node --test tests/*.test.js"
+    "check": "node --check public/js/app.js && node --check public/js/api.js && node --check public/js/auth.js && node --check public/js/recommendations.js && node --check public/js/storage.js && node --check public/js/game-model.js && node --check public/js/game-detail.js && node --check public/js/star-rating.js && node --check public/js/ui.js && node --check public/js/pages/login.js && node --check public/js/pages/register.js && node --check public/js/pages/preferences.js && node --check public/js/pages/recommendations-page.js && node --check public/js/pages/mypage.js && node --check public/js/pages/game-detail.js && node --check public/js/pages/games.js && node --test tests/*.test.js"
   }
 }

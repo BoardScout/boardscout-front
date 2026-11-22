@@ -165,19 +165,19 @@ export async function getPreferences() {
   }
 }
 
-// 게임을 저장 목록에 넣거나 뺍니다. 저장 여부와 갱신된 목록을 반환합니다.
+// 게임을 관심 목록에 넣거나 뺍니다. 저장 여부와 갱신된 목록을 반환합니다.
+// game.id를 키로 쓰므로 API 응답은 toViewGame()을 거친 뒤 넘겨야 합니다.
 export async function toggleFavorite(game) {
-  // API 추천 결과는 id 대신 gameId를 주므로 저장 목록의 키를 하나로 맞춥니다.
-  if (game.id == null && game.gameId != null) game = { ...game, id: game.gameId };
   const current = localSession.getFavorites();
   const exists = current.some((item) => item.id === game.id);
   const next = exists ? current.filter((item) => item.id !== game.id) : [...current, game];
-  // 저장 버튼은 즉시 반응하고, 서버 동기화 실패 시에도 로컬 목록은 유지합니다.
+  // 관심 목록은 아직 브라우저 저장소에만 있습니다. Spring에 favorites API가 생기면
+  // 아래 호출이 그대로 동기화하고, 지금은 404가 나도 로컬 목록을 유지합니다.
   localSession.setFavorites(next);
   try {
     if (exists) await coreApi.removeFavorite(game.id);
     else await coreApi.addFavorite(game.id);
-  } catch { /* 백엔드 연결 전에는 브라우저 저장소를 사용합니다. */ }
+  } catch { /* 서버 저장 실패는 무시하고 로컬 목록을 기준으로 둡니다. */ }
   return { saved: !exists, favorites: next };
 }
 

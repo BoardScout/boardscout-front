@@ -1,8 +1,8 @@
 import { coreApi } from "../api.js";
 import { GAMES, getDifficultyLabel, getLocalFavorites, getPlayerLabel, toggleFavorite } from "../recommendations.js";
 import { initChrome, requireLogin, showToast } from "../ui.js";
-import { bindStarRatings, getDatasetItemId, loadRatings, starRatingHtml } from "../star-rating.js";
-import { getKoGame, getGameImage } from "../game-catalog-ko.js";
+import { bindStarRatings, loadRatings, starRatingHtml } from "../star-rating.js";
+import { displayTitle, toViewGame } from "../game-model.js";
 import { escapeHtml, openGameDetail, safeImageUrl } from "../game-detail.js";
 
 initChrome();
@@ -17,29 +17,6 @@ let cursor = null;
 let activeQuery = "";
 let loading = false;
 const savedRatings = await loadRatings();
-
-// 서버 응답과 내장 데이터의 필드 이름 차이를 맞추고, 한국어 소개가 있으면 그 내용으로 덮어씁니다.
-const normalizeGame = (game) => {
-  const ko = getKoGame(game.bggId);
-  const image = ko ? getGameImage(game.bggId) : null;
-  return {
-  ...game,
-  title: game.nameEn ?? game.title,
-  localizedTitle: game.nameKo || game.localizedTitle || game.nameEn || game.title,
-  maxPlayTime: game.maxPlayTimeMinutes ?? game.maxPlayTime,
-  complexity: Number(game.difficulty ?? game.complexity ?? 0),
-  imageUrl: game.thumbnailUrl ?? game.imageUrl,
-  reason: game.descriptionKo ?? game.reason,
-  ...(ko ? {
-    localizedTitle: ko.nameKo,
-    reason: ko.description,
-    playSummary: ko.playSummary,
-    designer: ko.designer,
-    publisher: ko.publisher,
-    ...(image ? { imageUrl: image } : {}),
-  } : {}),
-  };
-};
 
 // 카드를 그릴 때 게임 정보를 보관했다가 상세 창에서 id로 다시 찾습니다.
 const gamesById = new Map();
@@ -77,9 +54,9 @@ const fetchPage = async () => {
 };
 
 // 게임 한 건을 카탈로그 카드 HTML 문자열로 만듭니다.
-const renderCard = (rawGame) => {
-  const game = normalizeGame(rawGame);
+const renderCard = (game) => {
   gamesById.set(Number(game.id), game);
+  const name = displayTitle(game);
   const imageUrl = safeImageUrl(game.imageUrl);
   const saved = getLocalFavorites().some((favorite) => favorite.id === game.id);
   const players = Number.isFinite(game.minPlayers) && Number.isFinite(game.maxPlayers)
@@ -90,16 +67,16 @@ const renderCard = (rawGame) => {
   return `
     <article class="catalog-card" data-game-id="${escapeHtml(game.id)}">
       <div class="catalog-card__cover">
-        <div class="catalog-card__image" data-open-detail role="button" tabindex="0" aria-label="${escapeHtml(game.localizedTitle)} 상세 보기">
+        <div class="catalog-card__image" data-open-detail role="button" tabindex="0" aria-label="${escapeHtml(name)} 상세 보기">
           ${imageUrl
-            ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(game.localizedTitle)} 보드게임 표지" loading="lazy" />`
-            : `<span aria-hidden="true">${escapeHtml(game.localizedTitle.slice(0, 1))}</span>`}
+            ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)} 보드게임 표지" loading="lazy" />`
+            : `<span aria-hidden="true">${escapeHtml(name.slice(0, 1))}</span>`}
         </div>
         ${themeTags(game).length ? `<ul class="catalog-card__tags" aria-label="테마">${themeTags(game).map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : ""}
         <button class="catalog-save" type="button" data-game-id="${escapeHtml(game.id)}" aria-pressed="${saved}">${saved ? "관심 등록됨" : "관심 등록"}</button>
-        <div class="catalog-card__rate">${starRatingHtml(game.id, game.localizedTitle, savedRatings.get(getDatasetItemId(game)))}</div>
+        <div class="catalog-card__rate">${starRatingHtml(game.id, name, savedRatings.get(game.datasetItemId))}</div>
       </div>
-      <h2 data-open-detail role="button" tabindex="0">${escapeHtml(game.localizedTitle)}<small>${escapeHtml(game.title || "")}</small></h2>
+      <h2 data-open-detail role="button" tabindex="0">${escapeHtml(name)}<small>${game.localizedTitle ? escapeHtml(game.title || "") : ""}</small></h2>
       <p class="catalog-card__facts">${facts.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</p>
     </article>`;
 };
@@ -117,7 +94,7 @@ const load = async ({ reset = false } = {}) => {
   }
 
   const page = await fetchPage();
-  const items = (page.items ?? []).map(normalizeGame);
+  const items = (page.items ?? []).map(toViewGame);
   grid.insertAdjacentHTML("beforeend", items.map(renderCard).join(""));
   cursor = page.nextCursor ?? null;
   loadMore.hidden = !page.hasNext;
@@ -172,11 +149,9 @@ grid.addEventListener("click", async (event) => {
   const button = event.target.closest(".catalog-save");
   if (!button) return;
   if (!(await requireLogin("관심 게임으로 등록하려면 로그인해 주세요."))) return;
-  const card = button.closest(".catalog-card");
-  const gameId = Number(button.dataset.gameId);
-  const localGame = GAMES.find((game) => game.id === gameId);
-  const title = card.querySelector("h2").childNodes[0].textContent.trim();
-  const game = localGame ?? { id: gameId, title, localizedTitle: title };
+  const game = gamesById.get(Number(button.dataset.gameId));
+  if (!game) return;
+  const title = displayTitle(game);
   const result = await toggleFavorite(game);
   button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
   button.setAttribute("aria-pressed", String(result.saved));
