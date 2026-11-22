@@ -11,8 +11,8 @@ const read = (key, fallback) => {
 };
 const write = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 
-// 브라우저 저장소입니다. 사용자와 취향은 서버에 닿지 못할 때 쓰는 캐시이고,
-// 관심 목록(favorites)은 서버 API가 없어 이곳이 유일한 저장 위치입니다.
+// 브라우저 저장소입니다. 사용자·취향·관심 목록 모두 서버가 기준이고,
+// 여기에는 서버에 닿지 못할 때 화면을 그리기 위한 마지막 사본만 둡니다.
 export const localSession = {
   getUser: () => read(KEYS.user, null),
   setUser: (user) => write(KEYS.user, user),

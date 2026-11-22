@@ -1,4 +1,4 @@
-import { GAMES, getLocalFavorites, toggleFavorite } from "./recommendations.js";
+import { GAMES, syncFavorites, toggleFavorite } from "./recommendations.js";
 import { initChrome, initReveal, requireLogin, showToast } from "./ui.js";
 
 initChrome();
@@ -7,8 +7,8 @@ initReveal();
 const header = document.querySelector("#siteHeader");
 const bagCount = document.querySelector("#bagCount");
 const rail = document.querySelector("#recommendationRail");
-// 저장한 게임 개수를 헤더의 가방 숫자로 표시합니다.
-if (bagCount) bagCount.textContent = String(getLocalFavorites().length);
+// 관심 게임 개수를 헤더 숫자로 표시합니다. 서버 응답을 기다리지 않도록 결과가 오면 채웁니다.
+syncFavorites().then((favorites) => { if (bagCount) bagCount.textContent = String(favorites.length); });
 // 첫 화면을 벗어나면 헤더를 상단에 고정해 주요 메뉴 접근을 유지합니다.
 window.addEventListener("scroll", () => header?.classList.toggle("is-fixed", window.scrollY > 90));
 
@@ -32,10 +32,14 @@ document.querySelectorAll(".product-card .quick-add").forEach((button) => {
     if (!(await requireLogin("관심 게임으로 등록하려면 로그인해 주세요."))) return;
     const game = GAMES.find(({ id }) => id === Number(button.dataset.gameId));
     if (!game) return;
-    const { saved, favorites } = await toggleFavorite(game);
-    button.firstChild.textContent = saved ? "관심 등록됨 " : "관심 등록 ";
-    if (bagCount) bagCount.textContent = String(favorites.length);
-    showToast(saved ? `${game.title} · 관심 등록했습니다` : `${game.title} · 관심 등록을 해제했습니다`);
+    try {
+      const { saved, favorites } = await toggleFavorite(game);
+      button.firstChild.textContent = saved ? "관심 등록됨 " : "관심 등록 ";
+      if (bagCount) bagCount.textContent = String(favorites.length);
+      showToast(saved ? `${game.title} · 관심 등록했습니다` : `${game.title} · 관심 등록을 해제했습니다`);
+    } catch {
+      showToast("관심 등록을 저장하지 못했습니다");
+    }
   });
 });
 

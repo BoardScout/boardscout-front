@@ -1,5 +1,5 @@
 import { coreApi } from "../api.js";
-import { GAMES, getDifficultyLabel, getLocalFavorites, getPlayerLabel, toggleFavorite } from "../recommendations.js";
+import { GAMES, getPlayerLabel, isFavorite, syncFavorites, toggleFavorite } from "../recommendations.js";
 import { initChrome, requireLogin, showToast } from "../ui.js";
 import { bindStarRatings, loadRatings, starRatingHtml } from "../star-rating.js";
 import { displayTitle, toViewGame } from "../game-model.js";
@@ -17,6 +17,8 @@ let cursor = null;
 let activeQuery = "";
 let loading = false;
 const savedRatings = await loadRatings();
+// 카드의 관심 등록 표시가 서버 기준이 되도록 첫 렌더 전에 목록을 맞춥니다.
+await syncFavorites();
 
 // 카드를 그릴 때 게임 정보를 보관했다가 상세 창에서 id로 다시 찾습니다.
 const gamesById = new Map();
@@ -58,7 +60,7 @@ const renderCard = (game) => {
   gamesById.set(Number(game.id), game);
   const name = displayTitle(game);
   const imageUrl = safeImageUrl(game.imageUrl);
-  const saved = getLocalFavorites().some((favorite) => favorite.id === game.id);
+  const saved = isFavorite(game);
   const players = Number.isFinite(game.minPlayers) && Number.isFinite(game.maxPlayers)
     ? getPlayerLabel(game)
     : "인원 정보 없음";
@@ -152,10 +154,14 @@ grid.addEventListener("click", async (event) => {
   const game = gamesById.get(Number(button.dataset.gameId));
   if (!game) return;
   const title = displayTitle(game);
-  const result = await toggleFavorite(game);
-  button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
-  button.setAttribute("aria-pressed", String(result.saved));
-  showToast(result.saved ? `${title} · 관심 등록했습니다` : `${title} · 관심 등록을 해제했습니다`);
+  try {
+    const result = await toggleFavorite(game);
+    button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
+    button.setAttribute("aria-pressed", String(result.saved));
+    showToast(result.saved ? `${title} · 관심 등록했습니다` : `${title} · 관심 등록을 해제했습니다`);
+  } catch {
+    showToast("관심 등록을 저장하지 못했습니다");
+  }
 });
 
 // 별 입력은 이벤트 위임으로 처리해, 나중에 붙는 카드도 한 번만 연결합니다.

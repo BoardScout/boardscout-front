@@ -1,4 +1,4 @@
-import { getDifficultyLabel, getPlayerLabel, getRecommendations, getTasteRecommendations, toggleFavorite } from "../recommendations.js?v=20261119-1";
+import { getDifficultyLabel, getPlayerLabel, getRecommendations, getTasteRecommendations, isFavorite, syncFavorites, toggleFavorite } from "../recommendations.js?v=20261119-1";
 import { bindStarRatings, loadRatings, starRatingHtml } from "../star-rating.js";
 import { displayTitle, toViewGame } from "../game-model.js";
 import { initChrome, requireLogin, showToast } from "../ui.js";
@@ -22,6 +22,7 @@ if (isTaste) {
 }
 
 const savedRatings = await loadRatings();
+await syncFavorites();
 // 취향 추천은 10개씩 보여주고 버튼으로 다음 10개를 엽니다.
 let visible = isTaste ? PAGE_SIZE : games.length;
 const showMore = document.querySelector("#showMore");
@@ -41,7 +42,7 @@ list.innerHTML = games.length ? games.slice(0, visible).map((game, index) => `
     <div class="recommendation-side">
       <div class="match-score">${game.score ?? 86}<small>일치도</small></div>
       <button class="secondary-button detail-open" type="button" data-index="${index}" aria-label="${displayTitle(game)} 상세 보기">상세 보기</button>
-      <button class="save-game" type="button" data-index="${index}" aria-pressed="false">관심 등록</button>
+      <button class="save-game" type="button" data-index="${index}" aria-pressed="${isFavorite(game)}">${isFavorite(game) ? "관심 등록됨" : "관심 등록"}</button>
     </div>
   </article>
 `).join("") : `<div class="empty-state">지금 조건에 맞는 게임이 없습니다.<br /><a class="text-link" href="/preferences.html">조건을 다시 고르기</a></div>`;
@@ -60,10 +61,14 @@ list.querySelectorAll(".save-game").forEach((button) => {
   button.addEventListener("click", async () => {
     if (!(await requireLogin("관심 게임으로 등록하려면 로그인해 주세요."))) return;
     const game = games[Number(button.dataset.index)];
-    const result = await toggleFavorite(game);
-    button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
-    button.setAttribute("aria-pressed", String(result.saved));
-    showToast(result.saved ? `${game.title} · 관심 게임에 등록했습니다` : `${game.title} · 관심 등록을 해제했습니다`);
+    try {
+      const result = await toggleFavorite(game);
+      button.textContent = result.saved ? "관심 등록됨" : "관심 등록";
+      button.setAttribute("aria-pressed", String(result.saved));
+      showToast(result.saved ? `${displayTitle(game)} · 관심 게임에 등록했습니다` : `${displayTitle(game)} · 관심 등록을 해제했습니다`);
+    } catch {
+      showToast("관심 등록을 저장하지 못했습니다");
+    }
   });
 });
 

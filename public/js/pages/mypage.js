@@ -1,5 +1,6 @@
 import { getSessionUser } from "../auth.js";
-import { getDifficultyLabel, getLocalFavorites, getPlayerLabel, getPreferences, toggleFavorite } from "../recommendations.js";
+import { getDifficultyLabel, getLocalFavorites, getPlayerLabel, getPreferences, syncFavorites, toggleFavorite } from "../recommendations.js";
+import { displayTitle, getDatasetItemId } from "../game-model.js";
 import { initChrome, showToast } from "../ui.js";
 import { coreApi } from "../api.js";
 import { GAMES } from "../recommendations.js";
@@ -30,16 +31,18 @@ document.querySelectorAll(".shelf__toggle").forEach((toggle) => {
 });
 
 const savedList = document.querySelector("#savedList");
+// 관심 목록은 서버에서 한 번 받아 사본을 맞춘 뒤, 이후 렌더는 사본을 읽습니다.
+await syncFavorites();
 // 저장 목록 변경 후 같은 렌더 함수를 호출해 빈 상태와 목록 상태를 일관되게 유지합니다.
 const renderSaved = () => {
   const favorites = getLocalFavorites();
   savedList.innerHTML = favorites.length ? favorites.map((game) => `
     <article class="saved-item">
-      <div><h3>${game.localizedTitle ?? game.nameKo ?? game.title ?? game.nameEn}${game.localizedTitle || game.nameKo ? `<small>${game.title ?? game.nameEn}</small>` : ""}</h3><p>${game.category} · ${getPlayerLabel(game)} · ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.3)}</p></div>
-      <button class="text-link remove-favorite" type="button" data-id="${game.id}">삭제</button>
+      <div><h3>${displayTitle(game)}${game.localizedTitle ? `<small>${game.title}</small>` : ""}</h3><p>${game.category} · ${getPlayerLabel(game)} · ${game.maxPlayTime}분 · ${getDifficultyLabel(game.complexity ?? 2.5)}</p></div>
+      <button class="text-link remove-favorite" type="button" data-id="${getDatasetItemId(game)}">삭제</button>
     </article>
   `).join("") : '<div class="empty-state">관심 등록한 게임이 없습니다.<br><a class="text-link" href="/recommendations.html">추천 게임 보러가기</a></div>';
-  document.querySelector("#favoriteSummary").textContent = summarize(favorites.map((game) => game.localizedTitle ?? game.nameKo ?? game.title ?? game.nameEn), "아직 없어요");
+  document.querySelector("#favoriteSummary").textContent = summarize(favorites.map(displayTitle), "아직 없어요");
 };
 renderSaved();
 
@@ -47,10 +50,15 @@ savedList.addEventListener("click", async (event) => {
   // 목록 전체에 이벤트를 위임해 다시 렌더링된 삭제 버튼도 계속 동작하게 합니다.
   const button = event.target.closest(".remove-favorite");
   if (!button) return;
-  const game = getLocalFavorites().find((item) => item.id === Number(button.dataset.id));
-  if (game) await toggleFavorite(game);
-  renderSaved();
-  showToast("관심 게임에서 뺐습니다");
+  const game = getLocalFavorites().find((item) => getDatasetItemId(item) === Number(button.dataset.id));
+  if (!game) return;
+  try {
+    await toggleFavorite(game);
+    renderSaved();
+    showToast("관심 게임에서 뺐습니다");
+  } catch {
+    showToast("관심 게임을 빼지 못했습니다");
+  }
 });
 
 // 별점 준 게임: 서버의 별점 목록에 브라우저가 기억한 이름과 내장 게임 이름을 붙여 보여 줍니다.

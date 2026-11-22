@@ -94,11 +94,10 @@ export const coreApi = {
     body: JSON.stringify({ rating }),
   }),
   removeRating: (datasetItemId) => request(`/api/v1/users/me/ratings/${datasetItemId}`, { method: "DELETE" }),
-  // favorites 세 API는 Spring에 아직 없어 404를 받습니다. 호출하는 쪽이 실패를 무시하고
-  // localStorage 관심 목록을 씁니다(recommendations.js의 toggleFavorite).
+  // 관심 등록도 별점처럼 데이터셋 ID를 씁니다. 등록(PUT)과 해제(DELETE)는 여러 번 호출해도 결과가 같습니다.
   favorites: () => request("/api/v1/users/me/favorites"),
-  addFavorite: (gameId) => request(`/api/v1/users/me/favorites/${gameId}`, { method: "POST" }),
-  removeFavorite: (gameId) => request(`/api/v1/users/me/favorites/${gameId}`, { method: "DELETE" }),
+  addFavorite: (datasetItemId) => request(`/api/v1/users/me/favorites/${datasetItemId}`, { method: "PUT" }),
+  removeFavorite: (datasetItemId) => request(`/api/v1/users/me/favorites/${datasetItemId}`, { method: "DELETE" }),
 };
 
 // FastAPI 추천 서버입니다. Nginx가 /api/v1/recommendations/ 경로만 이쪽으로 보냅니다.

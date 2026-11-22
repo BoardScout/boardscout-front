@@ -1,5 +1,6 @@
 import { coreApi, recommendationApi } from "./api.js";
 import { localSession } from "./storage.js";
+import { getDatasetItemId, toViewGame } from "./game-model.js";
 
 // 테마 코드를 화면에 표시할 한국어 이름으로 바꾸는 표입니다.
 export const THEME_LABELS = {
@@ -166,21 +167,36 @@ export async function getPreferences() {
   }
 }
 
-// 게임을 관심 목록에 넣거나 뺍니다. 저장 여부와 갱신된 목록을 반환합니다.
-// game.id를 키로 쓰므로 API 응답은 toViewGame()을 거친 뒤 넘겨야 합니다.
-export async function toggleFavorite(game) {
-  const current = localSession.getFavorites();
-  const exists = current.some((item) => item.id === game.id);
-  const next = exists ? current.filter((item) => item.id !== game.id) : [...current, game];
-  // 관심 목록은 아직 브라우저 저장소에만 있습니다. Spring에 favorites API가 생기면
-  // 아래 호출이 그대로 동기화하고, 지금은 404가 나도 로컬 목록을 유지합니다.
-  localSession.setFavorites(next);
+// 관심 목록은 서버(DB)가 기준이고, localStorage는 같은 페이지에서 바로 다시 읽기 위한 사본입니다.
+// 페이지를 열 때 서버 목록으로 사본을 덮어쓰고, 서버에 닿지 못하면 마지막 사본을 그대로 씁니다.
+export async function syncFavorites() {
   try {
-    if (exists) await coreApi.removeFavorite(game.id);
-    else await coreApi.addFavorite(game.id);
-  } catch { /* 서버 저장 실패는 무시하고 로컬 목록을 기준으로 둡니다. */ }
+    const payload = await coreApi.favorites();
+    const favorites = (payload.result ?? payload).map(toViewGame);
+    localSession.setFavorites(favorites);
+    return favorites;
+  } catch {
+    return localSession.getFavorites();
+  }
+}
+
+// 관심 목록의 키는 데이터셋 ID입니다. 카탈로그·추천·내장 목록 어디서 온 게임이든 같은 값이 나옵니다.
+export const isFavorite = (game) => localSession.getFavorites()
+  .some((item) => getDatasetItemId(item) === getDatasetItemId(game));
+
+// 게임을 관심 목록에 넣거나 뺍니다. 서버 저장이 성공한 뒤에만 사본을 바꾸고,
+// 실패하면 ApiError를 그대로 던져 호출한 화면이 안내 문구를 띄우게 합니다.
+export async function toggleFavorite(rawGame) {
+  const game = toViewGame(rawGame);
+  const id = game.datasetItemId;
+  const exists = isFavorite(game);
+  if (exists) await coreApi.removeFavorite(id);
+  else await coreApi.addFavorite(id);
+  const current = localSession.getFavorites();
+  const next = exists ? current.filter((item) => getDatasetItemId(item) !== id) : [...current, game];
+  localSession.setFavorites(next);
   return { saved: !exists, favorites: next };
 }
 
-// 브라우저에 저장된 게임 목록을 읽습니다.
+// 마지막으로 동기화한 관심 목록 사본을 읽습니다.
 export const getLocalFavorites = () => localSession.getFavorites();
