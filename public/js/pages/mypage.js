@@ -1,4 +1,4 @@
-import { getCurrentUser } from "../auth.js";
+import { getSessionUser } from "../auth.js";
 import { getDifficultyLabel, getLocalFavorites, getPlayerLabel, getPreferences, toggleFavorite } from "../recommendations.js";
 import { initChrome, showToast } from "../ui.js";
 import { coreApi } from "../api.js";
@@ -6,7 +6,7 @@ import { GAMES } from "../recommendations.js";
 import { loadRatings, readRatedGameCache } from "../star-rating.js";
 
 initChrome();
-const user = await getCurrentUser();
+const user = await getSessionUser();
 const preferences = await getPreferences();
 // 로그인 여부와 관계없이 확인 가능한 정보로 계정 요약을 구성합니다.
 document.querySelector("#accountName").textContent = user?.nickname || user?.name || "게스트 플레이어";

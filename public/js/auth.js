@@ -17,20 +17,6 @@ export async function loginAccount(payload) {
   return user;
 }
 
-// 서버에서 현재 로그인한 사용자를 조회합니다. 실패하면 마지막으로 저장한 사용자를 대신 반환합니다.
-export async function getCurrentUser() {
-  try {
-    // 브라우저가 BGSESSION 쿠키를 함께 보내면 서버가 Redis 세션으로 현재 사용자를 복원합니다.
-    const response = await coreApi.me();
-    const user = response.result ?? response;
-    localSession.setUser(user);
-    return user;
-  } catch {
-    // 서버 조회 실패 시 마지막으로 확인한 사용자를 사용해 화면 상태를 유지합니다.
-    return localSession.getUser();
-  }
-}
-
 // 서버 세션을 종료하고 브라우저에 저장된 사용자 정보도 지웁니다.
 export async function logoutAccount() {
   // 서버 세션 삭제 요청 뒤 화면에 남은 사용자 캐시도 함께 비웁니다.
@@ -38,8 +24,8 @@ export async function logoutAccount() {
   localSession.clearUser();
 }
 
-// 헤더와 로그인 화면이 쓰는 세션 확인입니다. 서버가 401로 답하면 로그아웃 상태로 보고 저장된 사용자도 지웁니다.
-// 서버에 닿지 못한 경우에만 마지막으로 확인한 사용자를 씁니다.
+// 현재 로그인한 사용자를 서버에서 확인합니다. 서버가 401·403으로 답하면 로그아웃 상태로 보고
+// 저장된 사용자도 지웁니다. 서버에 닿지 못한 경우에만 마지막으로 확인한 사용자를 씁니다.
 export async function getSessionUser() {
   try {
     const response = await coreApi.me();
